@@ -12,33 +12,88 @@ import {
   StyleSheet,
   ScrollView,
   View,
-  Text,
-  StatusBar,
+  Image,
+  TouchableOpacity,
 } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import {NavigationContainer} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
 import MainHome from './src/screens/MainHome';
 import Inventory from './src/screens/Inventory';
 import Search from './src/screens/Search';
 import Settings from './src/screens/Settings';
 import PlaceOrder from './src/screens/PlaceOrder';
+import Images from './src/assets/Images';
+import {colors, typography} from './src/styles';
+import SvgUri from 'react-native-svg-uri';
 
 const Stack = createStackNavigator();
 
 const App: () => React$Node = () => {
   return (
     <NavigationContainer>
-    <Stack.Navigator initialRouteName="MainHome">
-      <Stack.Screen name="MainHome" component={MainHome} />
-      <Stack.Screen name="Inventory" component={Inventory} />
-      <Stack.Screen name="Search" component={Search} />
-      <Stack.Screen name="Settings" component={Settings} />
-      <Stack.Screen name="PlaceOrder" component={PlaceOrder} />
-    </Stack.Navigator>
-  </NavigationContainer>
+      <Stack.Navigator
+        initialRouteName="MainHome"
+        screenOptions={{headerTitleAlign: 'center'}}>
+        <Stack.Screen
+          name="MainHome"
+          component={MainHome}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="Inventory"
+          component={Inventory}
+          options={{
+            headerBackImage: () => <NavBarLeftButton />,
+            headerStyle: mstyles.headerBackground,
+            headerTitleStyle: mstyles.headerText,
+          }}
+        />
+        <Stack.Screen
+          name="Search"
+          component={Search}
+          options={{
+            headerBackImage: () => <NavBarLeftButton />,
+            headerStyle: mstyles.headerBackground,
+            headerTitleStyle: mstyles.headerText,
+          }}
+        />
+        <Stack.Screen
+          name="Settings"
+          component={Settings}
+          options={{
+            headerBackImage: () => <NavBarLeftButton />,
+            headerStyle: mstyles.headerBackground,
+            headerTitleStyle: mstyles.headerText,
+          }}
+        />
+        <Stack.Screen
+          name="PlaceOrder"
+          component={PlaceOrder}
+          options={{
+            headerBackImage: () => <NavBarLeftButton />,
+            headerStyle: mstyles.headerBackground,
+            headerTitleStyle: mstyles.headerText,
+          }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 };
 
+const NavBarLeftButton = () => {
+  return <SvgUri width="32" height="20" source={Images.ic_back} />;
+};
 
+const mstyles = StyleSheet.create({
+  headerText: {
+    fontFamily: typography.FONT_FAMILY_REGULAR,
+    fontWeight: typography.FONT_WEIGHT_REGULAR,
+    fontSize: typography.FONT_SIZE_18,
+    color: colors.WHITE,
+  },
+  headerBackground: {
+    backgroundColor: colors.PRIMARY,
+  },
+});
 
 export default App;
