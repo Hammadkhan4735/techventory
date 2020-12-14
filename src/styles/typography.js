@@ -8,6 +8,7 @@ export const FONT_FAMILY_BOLD = 'CenturyGothic-Bold';
 export const FONT_WEIGHT_REGULAR = '400';
 export const FONT_WEIGHT_BOLD = '700';
 
+
 // FONT SIZE
 export const FONT_SIZE_20 = scaleFont(20);
 export const FONT_SIZE_18 = scaleFont(18);

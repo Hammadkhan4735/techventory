@@ -14,39 +14,54 @@ export default class MainHome extends Component {
   render() {
     return (
       <View style={mstyles.container}>
-        <View style={mstyles.layerDivide}>
+        <View style={[mstyles.layerDivide, {flex:0.45}]}>
           <View style={mstyles.circleShape}>
             <Image source={Images.logo2} style={mstyles.imageStyle}/>
           </View>
         </View>
-        <View style={mstyles.layerDivide}>
+        <View style={[mstyles.layerDivide, {flex:0.55}]}>
         <View style={mstyles.horizontallayerGrid}>
-          <View style={mstyles.boxView}>
-            <SvgUri width="40" height="40" source={Images.ic_inventory} />
+          <TouchableOpacity style={[mstyles.boxView, {marginRight:'4%', backgroundColor:colors.BROWN}]}
+          onPress={() => this.props.navigation.navigate('Inventory')}>
+            <SvgUri style={{marginBottom:10}} width="40" height="40" source={Images.ic_inventory} />
             <Text style={mstyles.textStyle}>
               Inventory
             </Text>
-          </View>
-          <View style={mstyles.boxView}>
-            <SvgUri width="40" height="40" source={Images.ic_inventory} />
+          </TouchableOpacity>
+          <TouchableOpacity style={[mstyles.boxView, {marginLeft:'4%', backgroundColor:colors.BLUE}]}
+          onPress={() => this.props.navigation.navigate('Search')}>
+            <SvgUri style={{marginBottom:10}} width="40" height="40" source={Images.ic_search} />
             <Text style={mstyles.textStyle}>
-              Inventory
+              Search
             </Text>
-          </View>
+          </TouchableOpacity>
         </View>
         <View style={mstyles.horizontallayerGrid}>
+          <TouchableOpacity style={[mstyles.boxView, {marginRight:'4%', backgroundColor:colors.PURPLE}]}
+          onPress={() => this.props.navigation.navigate('PlaceOrder')}>
+            <SvgUri style={{marginBottom:10}} width="40" height="40" source={Images.ic_placeorder} />
+            <Text style={mstyles.textStyle}>
+              Place Order
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={[mstyles.boxView, {marginLeft:'4%', backgroundColor:colors.GREEN}]}
+          onPress={() => this.props.navigation.navigate('Settings')}>
+            <SvgUri style={{marginBottom:10}} width="40" height="40" source={Images.ic_settings} />
+            <Text style={mstyles.textStyle}>
+              Settings
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <View style={{flex:0.2}}>
 
         </View>
-        <View style={{flex:0.3}}>
-
-        </View>
-          <Text style={{fontFamily: typography.FONT_FAMILY_BOLD}}>
+         {/*  <Text style={{fontFamily: typography.FONT_FAMILY_BOLD}}>
             Details Screen
           </Text>
           <Button
             title="Go to Details... again"
             onPress={() => this.props.navigation.navigate('Inventory')}
-          />
+          /> */}
         </View>
       </View>
     );
@@ -62,35 +77,36 @@ const mstyles = StyleSheet.create({
     alignItems: 'center',
   },
   layerDivide: {
-    backgroundColor:colors.BLUE,
-    flex: 0.5,
+
     justifyContent: 'center',
     alignItems: 'center',
   },
   horizontallayerGrid: {
-    flex: 0.5,
+    margin:'8%',
+    flex: 0.4,
     flexDirection:'row',
     justifyContent: 'center',
     alignItems: 'center',
   },
   boxView: {
     flex: 0.5,
-    width: '90%',
-    height:'90%',
+    width: 130,
+    height:130,
+    borderRadius:4,
     justifyContent: 'center',
     alignItems: 'center',
   },
   circleShape: {
-    width:160,
-    height:160,
+    width:150,
+    height:150,
     backgroundColor: colors.WHITE,
     borderRadius: 160/2,
     justifyContent: 'center',
     alignItems: 'center',
   },
   imageStyle: {
-    width:119,
-    height:98,
+    width:110,
+    height:92,
     marginBottom:spacing.SCALE_18,
     resizeMode: 'contain'
   },

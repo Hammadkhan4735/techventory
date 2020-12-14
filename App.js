@@ -10,6 +10,7 @@ import React from 'react';
 import {
   SafeAreaView,
   StyleSheet,
+  StatusBar,
   ScrollView,
   View,
   Image,
@@ -31,6 +32,10 @@ const Stack = createStackNavigator();
 const App: () => React$Node = () => {
   return (
     <NavigationContainer>
+      <StatusBar
+        backgroundColor={colors.PRIMARY}
+        barStyle="light-content"
+      />
       <Stack.Navigator
         initialRouteName="MainHome"
         screenOptions={{headerTitleAlign: 'center'}}>
@@ -87,7 +92,7 @@ const NavBarLeftButton = () => {
 const mstyles = StyleSheet.create({
   headerText: {
     fontFamily: typography.FONT_FAMILY_REGULAR,
-    fontWeight: typography.FONT_WEIGHT_REGULAR,
+    fontWeight: typography.FONT_WEIGHT_BOLD,
     fontSize: typography.FONT_SIZE_18,
     color: colors.WHITE,
   },
