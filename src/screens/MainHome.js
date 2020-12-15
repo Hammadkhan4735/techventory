@@ -55,13 +55,7 @@ export default class MainHome extends Component {
         <View style={{flex:0.2}}>
 
         </View>
-         {/*  <Text style={{fontFamily: typography.FONT_FAMILY_BOLD}}>
-            Details Screen
-          </Text>
-          <Button
-            title="Go to Details... again"
-            onPress={() => this.props.navigation.navigate('Inventory')}
-          /> */}
+
         </View>
       </View>
     );
