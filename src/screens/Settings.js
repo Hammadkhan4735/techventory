@@ -1,14 +1,25 @@
 import React, { Component } from 'react'
-import {StyleSheet, Text, View ,TouchableOpacity} from 'react-native'
+import {StyleSheet, Text, View ,TextInput,TouchableOpacity,ScrollView} from 'react-native'
 import {typography, colors, spacing} from '../styles';
 import Images from '../assets/Images';
 import SvgUri from 'react-native-svg-uri';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 
 export default class Settings extends Component {
+    constructor() {
+        super()
+        this.state = {
+           clientName: '',
+           blynkToken: ''
+        }
+     }
+
+
     render() {
         return (
             <View style={mstyles.container}>
+                <ScrollView style={{width:'100%'}} contentContainerStyle={{alignItems:'center'}}>
                 <View style={mstyles.layerView}>
                     <Text style={[mstyles.textStyleHeading, {marginTop:20,marginLeft:5,marginBottom:10}]}>
                         Total Containers
@@ -30,20 +41,65 @@ export default class Settings extends Component {
                     <Text style={[mstyles.textStyleHeading, {marginTop:20,marginLeft:5,marginBottom:10}]}>
                         Change Container Name
                     </Text>
-                    <View style={mstyles.cardView}>
-                        <TouchableOpacity style={mstyles.buttonPurple}>
-                            <SvgUri  width="10" height="10" source={Images.ic_minus} />
-                        </TouchableOpacity>
-                        <Text style={[mstyles.textStyle, {marginLeft:10,marginRight:10}]}>
-                            80
+                    <View style={[mstyles.cardView,{flexDirection:'column'}]}>
+                        <Text style={[mstyles.textStyle, {marginLeft:2,marginRight:10,marginBottom:10}]}>
+                            Old Name
                         </Text>
-                        <TouchableOpacity style={mstyles.buttonPurple}>
-                            <SvgUri  width="10" height="10" source={Images.ic_plus} />
+                        <TextInput  style={mstyles.textInputStyle} 
+                            underlineColorAndroid='rgba(0,0,0,0)'
+                            defaultValue={this.state.clientName}
+                            placeholder="" 
+                            onChangeText = {this.updateClientname}       
+                        />
+                        <Text style={[mstyles.textStyle, {marginLeft:2,marginRight:10,marginBottom:10,marginTop:15}]}>
+                            New Name
+                        </Text>
+                        <TextInput  style={mstyles.textInputStyle} 
+                            underlineColorAndroid='rgba(0,0,0,0)'
+                            defaultValue={this.state.clientName}
+                            placeholder="" 
+                            onChangeText = {this.updateClientname}       
+                        />
+                        <TouchableOpacity style={[mstyles.buttonBlue, {marginBottom:5,marginTop:20}]}>
+                            <Text style={[mstyles.textStyle,{fontSize: typography.FONT_SIZE_16}]}>
+                                Save Name
+                            </Text>
                         </TouchableOpacity>
+                       
+                    </View>
+                   
+                    <View style={[mstyles.cardView,{flexDirection:'column',marginTop:20,marginBottom:20}]}>
+                       
+                        <Text style={[mstyles.textStyle, {marginLeft:2,marginRight:10,marginBottom:10,marginTop:5}]}>
+                            Blynk Token
+                        </Text>
+                        <TextInput  style={mstyles.textInputStyle} 
+                            underlineColorAndroid='rgba(0,0,0,0)'
+                            defaultValue={this.state.clientName}
+                            placeholder="" 
+                            onChangeText = {this.updateClientname}       
+                        />
+                        <TouchableOpacity style={[mstyles.buttonBlue, {marginBottom:5,marginTop:20}]}>
+                            <Text style={[mstyles.textStyle,{fontSize: typography.FONT_SIZE_16}]}>
+                                Save Token
+                            </Text>
+                        </TouchableOpacity>
+                       
                     </View>
                 </View>
+              
+                </ScrollView>
             </View>
         )
+    }
+
+    //this fuction triggers on each input clientName valus has changed
+    updateContainerName = (text) => {
+        this.setState({clientName: text})
+    }
+
+    updateBlynkToken = (text) => {
+        this.setState({blynkToken: text})
     }
 }
 
@@ -52,8 +108,7 @@ const mstyles = StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: colors.PRIMARY,
-     
-      alignItems: 'center',
+      
     },
     layerView: {
         width:'85%',
@@ -81,7 +136,24 @@ const mstyles = StyleSheet.create({
       alignItems: 'center',
       backgroundColor: colors.PURPLE,
     },
-
+    buttonBlue: {
+        width: '100%',
+        borderRadius:4,
+        backgroundColor: colors.BLUEDARK,
+        alignItems: 'center',
+        justifyContent: 'center',
+        height:40
+      },
+    textInputStyle: {
+        width: '100%', 
+        paddingLeft:10 , 
+        paddingRight : 10, 
+        backgroundColor: colors.PRIMARY,
+        fontFamily: typography.FONT_FAMILY_REGULAR,
+        fontWeight: typography.FONT_WEIGHT_REGULAR,
+        fontSize: typography.FONT_SIZE_16,
+        color: colors.WHITE,
+    },
     textStyle: {
       fontFamily: typography.FONT_FAMILY_REGULAR,
       fontWeight: typography.FONT_WEIGHT_BOLD,
