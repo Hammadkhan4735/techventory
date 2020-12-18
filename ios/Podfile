@@ -18,6 +18,9 @@ target 'techventory' do
 
   pod 'RNSVG', :path => '../node_modules/react-native-svg'
 
+
+  pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
+
   target 'techventoryTests' do
     inherit! :complete
     # Pods for testing

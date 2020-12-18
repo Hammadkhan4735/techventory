@@ -3,15 +3,19 @@ import {StyleSheet, Text, View ,TextInput,TouchableOpacity,ScrollView} from 'rea
 import {typography, colors, spacing} from '../styles';
 import Images from '../assets/Images';
 import SvgUri from 'react-native-svg-uri';
-import { Colors } from 'react-native/Libraries/NewAppScreen';
 
+import DropDownPicker from 'react-native-dropdown-picker';
+import Icon from 'react-native-vector-icons/Feather';
+
+import { FONT_FAMILY_BOLD } from '../styles/typography';
 
 export default class Settings extends Component {
     constructor() {
         super()
         this.state = {
            clientName: '',
-           blynkToken: ''
+           blynkToken: '',
+           selectedContainer:''
         }
      }
 
@@ -45,11 +49,27 @@ export default class Settings extends Component {
                         <Text style={[mstyles.textStyle, {marginLeft:2,marginRight:10,marginBottom:10}]}>
                             Old Name
                         </Text>
-                        <TextInput  style={mstyles.textInputStyle} 
-                            underlineColorAndroid='rgba(0,0,0,0)'
-                            defaultValue={this.state.clientName}
-                            placeholder="" 
-                            onChangeText = {this.updateClientname}       
+                        <DropDownPicker style={mstyles.textInputStyle}
+                            items={[
+                                {label: 'Container 1', value: '1'},
+                                {label: 'Container 2', value: '2'},
+                                {label: 'Container 3', value: '3'},
+                                {label: 'Container 4', value: '4'},
+                            ]}
+                            defaultValue={this.state.selectedContainer}
+                            containerStyle={{height: 50}}
+                            itemStyle={{justifyContent: 'flex-start'}}
+                            labelStyle={mstyles.textDropDownStyle}
+                            arrowColor={colors.WHITE}
+                            activeLabelStyle={{color: colors.BROWN}}
+                            placeholder={'Select Container'}
+                        
+                            dropDownStyle={{backgroundColor: colors.PRIMARYLIGHT,
+                                borderBottomLeftRadius: 0, borderBottomRightRadius: 0,
+                                borderColor:colors.PRIMARY,borderWidth:2}}
+                            onChangeItem={item => this.setState({
+                                selectedContainer: item.value
+                            })}
                         />
                         <Text style={[mstyles.textStyle, {marginLeft:2,marginRight:10,marginBottom:10,marginTop:15}]}>
                             New Name
@@ -60,6 +80,7 @@ export default class Settings extends Component {
                             placeholder="" 
                             onChangeText = {this.updateClientname}       
                         />
+                        
                         <TouchableOpacity style={[mstyles.buttonBlue, {marginBottom:5,marginTop:20}]}>
                             <Text style={[mstyles.textStyle,{fontSize: typography.FONT_SIZE_16}]}>
                                 Save Name
@@ -149,6 +170,16 @@ const mstyles = StyleSheet.create({
         paddingLeft:10 , 
         paddingRight : 10, 
         backgroundColor: colors.PRIMARY,
+        borderTopLeftRadius: 0, borderTopRightRadius: 0,
+        borderBottomLeftRadius: 0, borderBottomRightRadius: 0,
+        borderColor:colors.PRIMARY,
+        fontFamily: typography.FONT_FAMILY_REGULAR,
+        fontWeight: typography.FONT_WEIGHT_REGULAR,
+        fontSize: typography.FONT_SIZE_16,
+        color: colors.WHITE,
+        
+    },
+    textDropDownStyle:{
         fontFamily: typography.FONT_FAMILY_REGULAR,
         fontWeight: typography.FONT_WEIGHT_REGULAR,
         fontSize: typography.FONT_SIZE_16,
