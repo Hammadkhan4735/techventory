@@ -9,6 +9,7 @@ export const BROWN = '#E4BE4E';
 export const GREEN = '#6ECC6B';
 export const BLUE = '#8489FB';
 export const PURPLE = '#965AF3';
+
 export const HINT = '#5A5F6F';
 
 

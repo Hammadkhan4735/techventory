@@ -1,13 +1,13 @@
 import React, { Component } from 'react'
 import {StyleSheet, Text, View ,TextInput,TouchableOpacity,ScrollView} from 'react-native'
-import {typography, colors, spacing} from '../styles';
+import {typography, colors} from '../styles';
 import Images from '../assets/Images';
 import SvgUri from 'react-native-svg-uri';
 
 import DropDownPicker from 'react-native-dropdown-picker';
 import Icon from 'react-native-vector-icons/Feather';
 
-import { FONT_FAMILY_BOLD } from '../styles/typography';
+
 
 export default class Settings extends Component {
     constructor() {
@@ -63,7 +63,7 @@ export default class Settings extends Component {
                             arrowColor={colors.WHITE}
                             activeLabelStyle={{color: colors.BROWN}}
                             placeholder={'Select Container'}
-                        
+                              placeholderStyle={{color:colors.GRAY_DARK}}
                             dropDownStyle={{backgroundColor: colors.PRIMARYLIGHT,
                                 borderBottomLeftRadius: 0, borderBottomRightRadius: 0,
                                 borderColor:colors.PRIMARY,borderWidth:2}}
@@ -129,7 +129,6 @@ const mstyles = StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: colors.PRIMARY,
-      
     },
     layerView: {
         width:'85%',
@@ -186,15 +185,15 @@ const mstyles = StyleSheet.create({
         color: colors.WHITE,
     },
     textStyle: {
-      fontFamily: typography.FONT_FAMILY_REGULAR,
-      fontWeight: typography.FONT_WEIGHT_BOLD,
-      fontSize: typography.FONT_SIZE_18,
-      color: colors.WHITE,
-    },
-    textStyleHeading: {
-        fontFamily: typography.FONT_FAMILY_REGULAR,
-        fontWeight: typography.FONT_WEIGHT_BOLD,
-        fontSize: typography.FONT_SIZE_22,
+        fontFamily: typography.FONT_FAMILY_BOLD,
+        fontWeight: typography.FONT_WEIGHT_REGULAR,
+        fontSize: typography.FONT_SIZE_18,
         color: colors.WHITE,
-      }
+      },
+      textStyleHeading: {
+          fontFamily: typography.FONT_FAMILY_BOLD,
+          fontWeight: typography.FONT_WEIGHT_REGULAR,
+          fontSize: typography.FONT_SIZE_22,
+          color: colors.WHITE,
+        },
   });

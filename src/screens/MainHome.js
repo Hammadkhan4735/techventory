@@ -105,8 +105,8 @@ const mstyles = StyleSheet.create({
     resizeMode: 'contain'
   },
   textStyle: {
-    fontFamily: typography.FONT_FAMILY_REGULAR,
-    fontWeight: typography.FONT_WEIGHT_BOLD,
+    fontFamily: typography.FONT_FAMILY_BOLD,
+    fontWeight: typography.FONT_WEIGHT_REGULAR,
     fontSize: typography.FONT_SIZE_18,
     color: colors.WHITE,
   }

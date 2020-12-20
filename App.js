@@ -13,7 +13,7 @@ import {
   StatusBar,
   ScrollView,
   View,
-  Image,
+  Text,
   TouchableOpacity,
 } from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
@@ -76,6 +76,7 @@ const App: () => React$Node = () => {
           component={PlaceOrder}
           options={{
             headerBackImage: () => <NavBarLeftButton />,
+            headerRight: () => <NavBarRightButton />,
             headerStyle: mstyles.headerBackground,
             headerTitleStyle: mstyles.headerText,
           }}
@@ -88,16 +89,38 @@ const App: () => React$Node = () => {
 const NavBarLeftButton = () => {
   return <SvgUri width="32" height="20" source={Images.ic_back} />;
 };
+const NavBarRightButton = () => {
+  return <TouchableOpacity style={mstyles.buttonBlue}>
+  <Text style={[mstyles.textStyle,{paddingTop:5,paddingBottom:5,paddingLeft:10,paddingRight:10}]}>
+      Export
+  </Text>
+</TouchableOpacity>;
+};
 
 const mstyles = StyleSheet.create({
   headerText: {
-    fontFamily: typography.FONT_FAMILY_REGULAR,
-    fontWeight: typography.FONT_WEIGHT_BOLD,
+    fontFamily: typography.FONT_FAMILY_BOLD,
+    fontWeight: typography.FONT_WEIGHT_REGULAR,
     fontSize: typography.FONT_SIZE_18,
     color: colors.WHITE,
   },
   headerBackground: {
     backgroundColor: colors.PRIMARY,
+  },
+  buttonBlue: {
+   
+    borderRadius:4,
+    marginRight:10,
+    backgroundColor: colors.BLUEDARK,
+    alignItems: 'center',
+    justifyContent: 'center',
+   
+  },
+  textStyle: {
+    fontFamily: typography.FONT_FAMILY_BOLD,
+    fontWeight: typography.FONT_WEIGHT_REGULAR,
+    fontSize: typography.FONT_SIZE_14,
+    color: colors.WHITE,
   },
 });
 
