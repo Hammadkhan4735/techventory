@@ -30,13 +30,13 @@ export default class Settings extends Component {
                     </Text>
                     <View style={mstyles.cardView}>
                         <TouchableOpacity style={mstyles.buttonPurple}>
-                            <SvgUri  width="10" height="10" source={Images.ic_minus} />
+                            <SvgUri  width="10" height="10" svgXmlData={Images.ic_minus} />
                         </TouchableOpacity>
                         <Text style={[mstyles.textStyle, {marginLeft:10,marginRight:10}]}>
                             80
                         </Text>
                         <TouchableOpacity style={mstyles.buttonPurple}>
-                            <SvgUri  width="10" height="10" source={Images.ic_plus} />
+                            <SvgUri  width="10" height="10" svgXmlData={Images.ic_plus} />
                         </TouchableOpacity>
                     </View>
                 </View>

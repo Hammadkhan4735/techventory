@@ -23,14 +23,14 @@ export default class MainHome extends Component {
         <View style={mstyles.horizontallayerGrid}>
           <TouchableOpacity style={[mstyles.boxView, {marginRight:'4%', backgroundColor:colors.BROWN}]}
           onPress={() => this.props.navigation.navigate('Inventory')}>
-            <SvgUri style={{marginBottom:10}} width="40" height="40" source={Images.ic_inventory} />
+            <SvgUri style={{marginBottom:10}} width="40" height="40" svgXmlData={Images.ic_inventory} />
             <Text style={mstyles.textStyle}>
               Inventory
             </Text>
           </TouchableOpacity>
           <TouchableOpacity style={[mstyles.boxView, {marginLeft:'4%', backgroundColor:colors.BLUE}]}
           onPress={() => this.props.navigation.navigate('Search')}>
-            <SvgUri style={{marginBottom:10}} width="40" height="40" source={Images.ic_search} />
+            <SvgUri style={{marginBottom:10}} width="40" height="40" svgXmlData={Images.ic_search} />
             <Text style={mstyles.textStyle}>
               Search
             </Text>
@@ -39,14 +39,14 @@ export default class MainHome extends Component {
         <View style={mstyles.horizontallayerGrid}>
           <TouchableOpacity style={[mstyles.boxView, {marginRight:'4%', backgroundColor:colors.PURPLE}]}
           onPress={() => this.props.navigation.navigate('PlaceOrder')}>
-            <SvgUri style={{marginBottom:10}} width="40" height="40" source={Images.ic_placeorder} />
+            <SvgUri style={{marginBottom:10}} width="40" height="40" svgXmlData={Images.ic_placeorder} />
             <Text style={mstyles.textStyle}>
               Place Order
             </Text>
           </TouchableOpacity>
           <TouchableOpacity style={[mstyles.boxView, {marginLeft:'4%', backgroundColor:colors.GREEN}]}
           onPress={() => this.props.navigation.navigate('Settings')}>
-            <SvgUri style={{marginBottom:10}} width="40" height="40" source={Images.ic_settings} />
+            <SvgUri style={{marginBottom:10}} width="40" height="40" svgXmlData={Images.ic_settings} />
             <Text style={mstyles.textStyle}>
               Settings
             </Text>

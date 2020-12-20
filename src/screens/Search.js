@@ -10,6 +10,9 @@ const InventoryData = [
     { id: '58694a0f', name: 'Vegetables'},
     { id: '594a0f', name: 'Container 4'},
     { id: '5869411a0f', name: 'Container 5'},
+    { id: '58694s0f', name: 'Powder'},
+    { id: '586941d0f', name: 'Maze'},
+    { id: '586asdqqf', name: 'Beans'},
   ];
 
 export default class Search extends Component {

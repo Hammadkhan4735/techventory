@@ -24,6 +24,7 @@ import Search from './src/screens/Search';
 import Settings from './src/screens/Settings';
 import PlaceOrder from './src/screens/PlaceOrder';
 import Images from './src/assets/Images';
+
 import {colors, typography} from './src/styles';
 import SvgUri from 'react-native-svg-uri';
 
@@ -38,7 +39,8 @@ const App: () => React$Node = () => {
       />
       <Stack.Navigator
         initialRouteName="MainHome"
-        screenOptions={{headerTitleAlign: 'center'}}>
+        screenOptions={{headerTitleAlign: 'center'}}
+        >
         <Stack.Screen
           name="MainHome"
           component={MainHome}
@@ -87,8 +89,9 @@ const App: () => React$Node = () => {
 };
 
 const NavBarLeftButton = () => {
-  return <SvgUri width="32" height="20" source={Images.ic_back} />;
+  return <SvgUri width="36" height="20" svgXmlData={Images.ic_back} />;
 };
+
 const NavBarRightButton = () => {
   return <TouchableOpacity style={mstyles.buttonBlue}>
   <Text style={[mstyles.textStyle,{paddingTop:5,paddingBottom:5,paddingLeft:10,paddingRight:10}]}>
@@ -106,6 +109,9 @@ const mstyles = StyleSheet.create({
   },
   headerBackground: {
     backgroundColor: colors.PRIMARY,
+      elevation: 0,
+      shadowOpacity: 0,
+   
   },
   buttonBlue: {
    
