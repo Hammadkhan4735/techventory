@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "606189734452",
+    "project_id": "techventory-de412",
+    "storage_bucket": "techventory-de412.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:606189734452:android:8047ade57799d567c61861",
+        "android_client_info": {
+          "package_name": "com.techventory"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "606189734452-v1gb7od3o1hbr2fbd0fkl83rh9nn416u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAaJB1_Okztn-26kmy9Jdq4JqJxzBHP_EA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "606189734452-v1gb7od3o1hbr2fbd0fkl83rh9nn416u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

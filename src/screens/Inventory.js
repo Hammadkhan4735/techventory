@@ -2,8 +2,13 @@ import React, { Component } from 'react'
 import {StyleSheet, Text, View ,FlatList} from 'react-native'
 import {typography, colors} from '../styles';
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
+import firestore from '@react-native-firebase/firestore';
+import * as Constant from '../utils/Constants'
 
-const InventoryData = [
+import { utils } from '@react-native-firebase/app';
+
+
+const InventoryDataDumy = [
     { id: 'bd7acbea', name: 'Rice'},
     { id: '3ac68afc', name: 'Maze'},
     { id: '58694a0f', name: 'Vegetables'},
@@ -14,6 +19,8 @@ const InventoryData = [
     { id: '58694414a0f', name: 'Beans'},
   ];
 
+ 
+
 export default class Inventory extends Component {
     
     constructor() {
@@ -21,8 +28,11 @@ export default class Inventory extends Component {
         this.state = {
            clientName: '',
            blynkToken: '',
-           selectedContainer:''
+           selectedContainer:'',
+           InventoryData:[]
         }
+        
+        this.getInventoryList()
      }
 
 
@@ -30,15 +40,38 @@ export default class Inventory extends Component {
         return (
             <View  style={mstyles.container}>
                 <FlatList  contentContainerStyle={{paddingBottom:15}}
-                    data={InventoryData}
+                    data={this.state.InventoryData}
                     renderItem={renderItem}
                     keyExtractor={item => item.id}
                 />
             </View>
         )
     }
+
+    getInventoryList(){
+        firestore().collection(Constant.DbInventory)
+        .get()
+        .then(querySnapshot => {
+                //console.log('Total users: ', querySnapshot.size);
+                const arrTemp = this.state.InventoryData.slice()
+                querySnapshot.forEach(documentSnapshot => {
+                    console.log('User ID: ', documentSnapshot.id, documentSnapshot.data());
+                    arrTemp.push(documentSnapshot.data())
+                });
+                this.setState({InventoryData: arrTemp});
+                //console.log('Last Item: ', this.state.InventoryData[0]);
+        })
+        .catch((error) => {
+            console.log('Unable to Connect to Server'+error)
+        })
+        .done(()=>{
+            console.log('Completed');
+          });
+    }
     
 }
+
+
 const renderItem = ({ item }) => (
     <View style={[mstyles.layerView,{ alignSelf:'center'}]}>
                 <Text style={[mstyles.textStyleHeading, {marginTop:15,marginLeft:5,marginBottom:10}]}>
@@ -50,8 +83,8 @@ const renderItem = ({ item }) => (
                             <Text style={[mstyles.textStyle,{fontSize: typography.FONT_SIZE_16}]}>
                                 Time To Refil
                             </Text>
-                            <Text style={[mstyles.textStyleSmall,{marginLeft:5}]}>
-                                04:30 PM
+                            <Text style={[mstyles.textStyleSmall,{marginLeft:5}]}>                                
+                                {item.timeToRefill}
                             </Text>
                         </View>
                         <View style={{flex:0.2}}></View>
@@ -60,7 +93,7 @@ const renderItem = ({ item }) => (
                                 Date To Refil
                             </Text>
                             <Text style={[mstyles.textStyleSmall,{marginLeft:5}]}>
-                                11/23/2020
+                                {item.dateToRefill}
                             </Text>
                         </View>
                     </View>
@@ -70,6 +103,7 @@ const renderItem = ({ item }) => (
                     </Text>
                     </View>
                     <MultiSlider
+                        values={[parseInt(item.weight)]}
                         snapped={true}
                         step={10}
                         selectedStyle={{backgroundColor: colors.SECONDARY}}
@@ -83,23 +117,35 @@ const renderItem = ({ item }) => (
                             width: 40,
                             borderRadius: 10,
                             slipDisplacement: 10}}
+                        enabledOne={false}
                         customMarker={MySeekbarMarker}
                         allowOverlap={false}
                         min={0}
                         max={100}
                     />
                     <View   style={{flexDirection:'row'}}>
-                        <Text style={mstyles.seekBarLabelStyle}> 0 </Text>
-                        <Text style={mstyles.seekBarLabelStyle}> 10 </Text>
-                        <Text style={mstyles.seekBarLabelStyle}> 20 </Text>
-                        <Text style={mstyles.seekBarLabelStyle}> 30 </Text>
-                        <Text style={mstyles.seekBarLabelStyle}> 40 </Text>
-                        <Text style={mstyles.seekBarLabelStyle}> 50 </Text>
-                        <Text style={mstyles.seekBarLabelStyle}> 60 </Text>
-                        <Text style={mstyles.seekBarLabelStyle}> 70 </Text>
-                        <Text style={mstyles.seekBarLabelStyle}> 80 </Text>
-                        <Text style={mstyles.seekBarLabelStyle}> 90 </Text>
-                        <Text style={mstyles.seekBarLabelStyle}> 100 </Text>
+                        <Text style={[mstyles.seekBarLabelStyle, (item.weight >= 0 && item.weight < 10)  ? { color: 'white' } : null ]}>
+                             0 </Text>
+                        <Text style={[mstyles.seekBarLabelStyle, (item.weight >= 10 && item.weight < 20) ? { color: 'white' } : null ]}>
+                             10 </Text>
+                        <Text style={[mstyles.seekBarLabelStyle, (item.weight >= 20 && item.weight < 30) ? { color: 'white' } : null ]}>
+                             20 </Text>
+                        <Text style={[mstyles.seekBarLabelStyle, (item.weight >= 30 && item.weight < 40) ? { color: 'white' } : null ]}>
+                             30 </Text>
+                        <Text style={[mstyles.seekBarLabelStyle, (item.weight >= 40 && item.weight < 50) ? { color: 'white' } : null ]}>
+                             40 </Text>
+                        <Text style={[mstyles.seekBarLabelStyle, (item.weight >= 50 && item.weight < 60) ? { color: 'white' } : null ]}>
+                             50 </Text>
+                        <Text style={[mstyles.seekBarLabelStyle, (item.weight >= 60 && item.weight < 70) ? { color: 'white' } : null ]}>
+                             60 </Text>
+                        <Text style={[mstyles.seekBarLabelStyle, (item.weight >= 70 && item.weight < 80) ? { color: 'white' } : null ]}>
+                             70 </Text>
+                        <Text style={[mstyles.seekBarLabelStyle, (item.weight >= 80 && item.weight < 90) ? { color: 'white' } : null ]}>
+                             80 </Text>
+                        <Text style={[mstyles.seekBarLabelStyle, (item.weight >= 90 && item.weight < 100) ? { color: 'white' } : null ]}>
+                             90 </Text>
+                        <Text style={[mstyles.seekBarLabelStyle, (item.weight >= 100 && item.weight < 110) ? { color: 'white' } : null ]}>
+                             100 </Text>
                     </View>
                 </View>
             </View>
