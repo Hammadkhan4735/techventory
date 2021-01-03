@@ -2,8 +2,11 @@ import React, { Component } from 'react'
 import {StyleSheet, Text, View ,FlatList,TouchableOpacity,ScrollView} from 'react-native'
 import {typography, colors} from '../styles';
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
+import * as Constant from '../utils/Constants';
+import Loader from '../components/Loader';
+import firestore from '@react-native-firebase/firestore';
 
-const InventoryData = [
+const InventoryDataDummy = [
     { id: 'bd7acbea', name: 'Flour'},
     { id: '58694s0f', name: 'Powder'},
     { id: '586941d0f', name: 'Maze'},
@@ -19,23 +22,51 @@ export default class PlaceOrder extends Component {
     constructor() {
         super()
         this.state = {
-           clientName: '',
-           blynkToken: '',
-           selectedContainer:''
+            isloading:true,
+           InventoryData:[]
         }
+
+        this.getInventoryListForOrder()
      }
      
     render() {
         return (
             <View  style={mstyles.container}>
                 <FlatList  contentContainerStyle={{paddingBottom:15}}
-                    data={InventoryData}
+                    data={this.state.InventoryData}
                     renderItem={renderItem}
                     keyExtractor={item => item.id}
                 />
+                <Loader
+                    loading={this.state.isloading} />
             </View>
         )
     } 
+
+
+    getInventoryListForOrder(){
+        this.setState({isloading: !this.state.isloading});
+        firestore().collection(Constant.DbInventory)
+        .where('weight', '<=', '20')   // this threshold will be add in setting later on
+        .get()
+        .then(querySnapshot => {
+                //console.log('Total users: ', querySnapshot.size);
+                const arrTemp = this.state.InventoryData.slice()
+                querySnapshot.forEach(documentSnapshot => {
+                    console.log('User ID: ', documentSnapshot.id, documentSnapshot.data());
+                    arrTemp.push(documentSnapshot.data())
+                });
+                this.setState({InventoryData: arrTemp});
+                //console.log('Last Item: ', this.state.InventoryData[0]);
+        })
+        .catch((error) => {
+            console.log('Unable to Connect to Server'+error)
+        })
+        .done(()=>{
+            console.log('Completed');
+            this.setState({isloading: !this.state.isloading});
+        });
+    }
 }
 
 const renderItem = ({ item }) => (
@@ -50,7 +81,7 @@ const renderItem = ({ item }) => (
                                 Time To Refil
                             </Text>
                             <Text style={[mstyles.textStyleSmall,{marginLeft:5}]}>
-                                04:30 PM
+                                {item.timeToRefill}
                             </Text>
                         </View>
                         <View style={{flex:0.2}}></View>
@@ -59,7 +90,7 @@ const renderItem = ({ item }) => (
                                 Date To Refil
                             </Text>
                             <Text style={[mstyles.textStyleSmall,{marginLeft:5}]}>
-                                11/23/2020
+                                {item.dateToRefill}
                             </Text>
                         </View>
                     </View>
@@ -69,6 +100,7 @@ const renderItem = ({ item }) => (
                     </Text>
                     </View>
                     <MultiSlider
+                        values={[parseInt(item.weight)]}
                         snapped={true}
                         step={10}
                         selectedStyle={{backgroundColor: colors.SECONDARY}}
@@ -84,21 +116,33 @@ const renderItem = ({ item }) => (
                             slipDisplacement: 10}}
                         customMarker={MySeekbarMarker}
                         allowOverlap={false}
+                        enabledOne={false}
                         min={0}
                         max={100}
                     />
                     <View   style={{flexDirection:'row'}}>
-                        <Text style={mstyles.seekBarLabelStyle}> 0 </Text>
-                        <Text style={mstyles.seekBarLabelStyle}> 10 </Text>
-                        <Text style={mstyles.seekBarLabelStyle}> 20 </Text>
-                        <Text style={mstyles.seekBarLabelStyle}> 30 </Text>
-                        <Text style={mstyles.seekBarLabelStyle}> 40 </Text>
-                        <Text style={mstyles.seekBarLabelStyle}> 50 </Text>
-                        <Text style={mstyles.seekBarLabelStyle}> 60 </Text>
-                        <Text style={mstyles.seekBarLabelStyle}> 70 </Text>
-                        <Text style={mstyles.seekBarLabelStyle}> 80 </Text>
-                        <Text style={mstyles.seekBarLabelStyle}> 90 </Text>
-                        <Text style={mstyles.seekBarLabelStyle}> 100 </Text>
+                    <Text style={[mstyles.seekBarLabelStyle, (item.weight >= 0 && item.weight < 10)  ? { color: 'white' } : null ]}>
+                             0 </Text>
+                        <Text style={[mstyles.seekBarLabelStyle, (item.weight >= 10 && item.weight < 20) ? { color: 'white' } : null ]}>
+                             10 </Text>
+                        <Text style={[mstyles.seekBarLabelStyle, (item.weight >= 20 && item.weight < 30) ? { color: 'white' } : null ]}>
+                             20 </Text>
+                        <Text style={[mstyles.seekBarLabelStyle, (item.weight >= 30 && item.weight < 40) ? { color: 'white' } : null ]}>
+                             30 </Text>
+                        <Text style={[mstyles.seekBarLabelStyle, (item.weight >= 40 && item.weight < 50) ? { color: 'white' } : null ]}>
+                             40 </Text>
+                        <Text style={[mstyles.seekBarLabelStyle, (item.weight >= 50 && item.weight < 60) ? { color: 'white' } : null ]}>
+                             50 </Text>
+                        <Text style={[mstyles.seekBarLabelStyle, (item.weight >= 60 && item.weight < 70) ? { color: 'white' } : null ]}>
+                             60 </Text>
+                        <Text style={[mstyles.seekBarLabelStyle, (item.weight >= 70 && item.weight < 80) ? { color: 'white' } : null ]}>
+                             70 </Text>
+                        <Text style={[mstyles.seekBarLabelStyle, (item.weight >= 80 && item.weight < 90) ? { color: 'white' } : null ]}>
+                             80 </Text>
+                        <Text style={[mstyles.seekBarLabelStyle, (item.weight >= 90 && item.weight < 100) ? { color: 'white' } : null ]}>
+                             90 </Text>
+                        <Text style={[mstyles.seekBarLabelStyle, (item.weight >= 100 && item.weight < 110) ? { color: 'white' } : null ]}>
+                             100 </Text>
                     </View>
                 </View>
             </View>

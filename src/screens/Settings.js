@@ -1,25 +1,36 @@
 import React, { Component } from 'react'
-import {StyleSheet, Text, View ,TextInput,TouchableOpacity,ScrollView} from 'react-native'
+import {StyleSheet, Text, View ,TextInput,TouchableOpacity,ScrollView,
+    ToastAndroid,Platform,Alert} from 'react-native'
 import {typography, colors} from '../styles';
 import Images from '../assets/Images';
 import SvgUri from 'react-native-svg-uri';
-
+import * as Helping from '../utils/Helping';
 import DropDownPicker from 'react-native-dropdown-picker';
-import Icon from 'react-native-vector-icons/Feather';
+import * as Constant from '../utils/Constants';
+import Loader from '../components/Loader';
+import firestore from '@react-native-firebase/firestore';
 
-
+let mcontroller;
 
 export default class Settings extends Component {
+    
     constructor() {
         super()
         this.state = {
-           clientName: '',
+           newName: '',
            blynkToken: '',
-           selectedContainer:''
+        
+           isloading:true,
+           selectedContainer:'',
+           selectedContainerID:'',
+           InventoryData:[],
+           DropDownArray:[],
         }
+
+        this.getInventoryList()
      }
 
-
+     
     render() {
         return (
             <View style={mstyles.container}>
@@ -29,13 +40,15 @@ export default class Settings extends Component {
                         Total Containers
                     </Text>
                     <View style={mstyles.cardView}>
-                        <TouchableOpacity style={mstyles.buttonPurple}>
+                        <TouchableOpacity style={mstyles.buttonPurple}
+                        onPress={this.addContainer}>
                             <SvgUri  width="10" height="10" svgXmlData={Images.ic_minus} />
                         </TouchableOpacity>
                         <Text style={[mstyles.textStyle, {marginLeft:10,marginRight:10}]}>
-                            80
+                            {this.state.InventoryData.length}
                         </Text>
-                        <TouchableOpacity style={mstyles.buttonPurple}>
+                        <TouchableOpacity style={mstyles.buttonPurple} 
+                        onPress={this.removeContainer}>
                             <SvgUri  width="10" height="10" svgXmlData={Images.ic_plus} />
                         </TouchableOpacity>
                     </View>
@@ -50,12 +63,8 @@ export default class Settings extends Component {
                             Old Name
                         </Text>
                         <DropDownPicker style={mstyles.textInputStyle}
-                            items={[
-                                {label: 'Container 1', value: '1'},
-                                {label: 'Container 2', value: '2'},
-                                {label: 'Container 3', value: '3'},
-                                {label: 'Container 4', value: '4'},
-                            ]}
+                            items={this.state.DropDownArray}
+                            controller={instance => mcontroller = instance}
                             defaultValue={this.state.selectedContainer}
                             containerStyle={{height: 50}}
                             itemStyle={{justifyContent: 'flex-start'}}
@@ -68,7 +77,8 @@ export default class Settings extends Component {
                                 borderBottomLeftRadius: 0, borderBottomRightRadius: 0,
                                 borderColor:colors.PRIMARY,borderWidth:2}}
                             onChangeItem={item => this.setState({
-                                selectedContainer: item.value
+                               
+                                selectedContainerID: item.value,
                             })}
                         />
                         <Text style={[mstyles.textStyle, {marginLeft:2,marginRight:10,marginBottom:10,marginTop:15}]}>
@@ -76,12 +86,13 @@ export default class Settings extends Component {
                         </Text>
                         <TextInput  style={mstyles.textInputStyle} 
                             underlineColorAndroid='rgba(0,0,0,0)'
-                            defaultValue={this.state.clientName}
+                            defaultValue={this.state.newName}
                             placeholder="" 
-                            onChangeText = {this.updateClientname}       
+                            onChangeText = {this.typeContainerName}       
                         />
                         
-                        <TouchableOpacity style={[mstyles.buttonBlue, {marginBottom:5,marginTop:20}]}>
+                        <TouchableOpacity style={[mstyles.buttonBlue, {marginBottom:5,marginTop:20}]}
+                        onPress={this.saveContainerName}>
                             <Text style={[mstyles.textStyle,{fontSize: typography.FONT_SIZE_16}]}>
                                 Save Name
                             </Text>
@@ -98,9 +109,10 @@ export default class Settings extends Component {
                             underlineColorAndroid='rgba(0,0,0,0)'
                             defaultValue={this.state.clientName}
                             placeholder="" 
-                            onChangeText = {this.updateClientname}       
+                            onChangeText = {this.typeBlynkToken}       
                         />
-                        <TouchableOpacity style={[mstyles.buttonBlue, {marginBottom:5,marginTop:20}]}>
+                        <TouchableOpacity style={[mstyles.buttonBlue, {marginBottom:5,marginTop:20}]}
+                        onPress={this.saveBlynkToken}>
                             <Text style={[mstyles.textStyle,{fontSize: typography.FONT_SIZE_16}]}>
                                 Save Token
                             </Text>
@@ -110,17 +122,135 @@ export default class Settings extends Component {
                 </View>
               
                 </ScrollView>
+                <Loader
+                    loading={this.state.isloading} />
             </View>
         )
     }
 
-    //this fuction triggers on each input clientName valus has changed
-    updateContainerName = (text) => {
-        this.setState({clientName: text})
+
+    getInventoryList(){
+        this.setState({isloading: !this.state.isloading});
+        firestore().collection(Constant.DbInventory)
+        .get()
+        .then(querySnapshot => {
+                //console.log('Total users: ', querySnapshot.size);
+                const arrTemp = this.state.InventoryData.slice()
+                const arrDDownTemp = this.state.DropDownArray.slice()
+                querySnapshot.forEach(documentSnapshot => {
+                    //console.log('User ID: ', documentSnapshot.id, documentSnapshot.data());
+                    arrTemp.push(documentSnapshot.data())
+                    arrDDownTemp.push({label:documentSnapshot.data().name,value:documentSnapshot.data().id})
+                });
+                this.setState({InventoryData: arrTemp});
+                this.setState({DropDownArray: arrDDownTemp});
+                //console.log('Last Item: ', this.state.InventoryData[0]);
+        })
+        .catch((error) => {
+            console.log('Unable to Connect to Server'+error)
+        })
+        .done(()=>{
+            console.log('Completed');
+            this.setState({isloading: !this.state.isloading});
+        });
     }
 
-    updateBlynkToken = (text) => {
+    //this fuction triggers on each input clientName valus has changed
+    typeContainerName = (text) => {
+        this.setState({newName: text})
+    }
+
+    typeBlynkToken = (text) => {
         this.setState({blynkToken: text})
+    }
+
+    saveContainerName = () => {
+        if(this.state.selectedContainerID!=""&&this.state.newName!=""){
+            this.setState({isloading: !this.state.isloading});
+            firestore().collection(Constant.DbInventory).doc(this.state.selectedContainerID)
+            .update({name: this.state.newName})
+            .then(() => {
+                let arrTemp = this.state.InventoryData.slice()
+                let arrDDownTemp = this.state.DropDownArray.slice()
+                this.state.InventoryData.map((item, i) => {
+                    if(item.id==this.state.selectedContainerID){
+                        arrTemp[i].name=this.state.newName
+                        arrDDownTemp[i].label=this.state.newName
+                        console.log('Last Item: ', arrDDownTemp[i]);
+                        //this.setState({selectedContainer: arrDDownTemp[i]});
+                    }
+                });
+                
+                this.mcontroller.selectItem(this.state.newName);
+                
+                this.setState({InventoryData: arrTemp,
+                    DropDownArray: arrDDownTemp,
+                    newName:''
+                });
+                
+                Helping.showToastMessage("Updated successfully")
+            })
+            .catch((error) => {
+                Helping.showToastMessage("Unable to Connect to Server"+error)
+            })
+            .done(()=>{
+                this.setState({isloading: !this.state.isloading});
+            });
+        }
+        else{
+            if(this.state.selectedContainerID==""){
+                Helping.showToastMessage("Please select any container")
+            }
+            else{
+                Helping.showToastMessage("Please enter new name")
+            }
+        }
+    }
+
+    addContainer = () => {
+        if(this.state.InventoryData.length<50){
+            this.setState({isloading: !this.state.isloading});
+            firestore().collection(Constant.DbInventory).doc(this.state.selectedContainerID)
+            .update({name: this.state.newName})
+            .then(() => {
+                let arrTemp = this.state.InventoryData.slice()
+                let arrDDownTemp = this.state.DropDownArray.slice()
+                this.state.InventoryData.map((item, i) => {
+                    if(item.id==this.state.selectedContainerID){
+                        arrTemp[i].name=this.state.newName
+                        arrDDownTemp[i].label=this.state.newName
+                        console.log('Last Item: ', arrDDownTemp[i]);
+                        //this.setState({selectedContainer: arrDDownTemp[i]});
+                    }
+                });
+                
+                this.mcontroller.selectItem(this.state.newName);
+                
+                this.setState({InventoryData: arrTemp,
+                    DropDownArray: arrDDownTemp,
+                    newName:''
+                });
+                
+                Helping.showToastMessage("Updated successfully")
+            })
+            .catch((error) => {
+                Helping.showToastMessage("Unable to Connect to Server"+error)
+            })
+            .done(()=>{
+                this.setState({isloading: !this.state.isloading});
+            });
+        }
+        else{
+            Helping.showToastMessage("You have reached maximum container limit")
+        }
+    }
+
+    removeContainer = () => {
+        
+    }
+
+    saveBlynkToken = () => {
+        
     }
 }
 

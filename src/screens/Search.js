@@ -1,10 +1,16 @@
 import React, { Component } from 'react'
-import {StyleSheet, Text, View ,FlatList,TouchableOpacity} from 'react-native'
+import {StyleSheet, Text, View ,FlatList,TouchableOpacity, 
+    ToastAndroid,Platform,Alert} from 'react-native'
 import {typography, colors} from '../styles';
 import DropDownPicker from 'react-native-dropdown-picker';
-import Icon from 'react-native-vector-icons/Feather';
+import * as Constant from '../utils/Constants';
+import * as Helping from '../utils/Helping';
+import Loader from '../components/Loader';
+import firestore from '@react-native-firebase/firestore';
+import Inventory from './Inventory';
 
-const InventoryData = [
+
+const InventoryDataDummy = [
     { id: 'bd7acbea', name: 'Flour'},
     { id: '3ac68afc', name: 'Rice'},
     { id: '58694a0f', name: 'Vegetables'},
@@ -19,10 +25,14 @@ export default class Search extends Component {
     constructor() {
         super()
         this.state = {
-           clientName: '',
-           blynkToken: '',
-           selectedContainer:''
+           selectedContainer:'',
+           isloading:true,
+           InventoryData:[],
+           DropDownArray:[],
+           InventoryFlatListData:[]
         }
+
+        this.getInventoryList()
      }
 
 
@@ -32,12 +42,7 @@ export default class Search extends Component {
                 <View style={{flexDirection:'row',height: 45,width:'90%',alignSelf:'center',marginTop:20,marginBottom:5}}>
                     <View style={{flex:0.7,marginRight:5}}>
                     <DropDownPicker style={mstyles.textInputStyle}
-                            items={[
-                                {label: 'Container 1', value: '1'},
-                                {label: 'Container 2', value: '2'},
-                                {label: 'Container 3', value: '3'},
-                                {label: 'Container 4', value: '4'},
-                            ]}
+                            items={this.state.DropDownArray}
                             defaultValue={this.state.selectedContainer}
                             containerStyle={{height: 60}}
                             itemStyle={{justifyContent: 'flex-start'}}
@@ -54,19 +59,67 @@ export default class Search extends Component {
                             })}
                     />
                     </View>
-                    <TouchableOpacity style={[mstyles.buttonBlue, {flex:0.3,marginLeft:5}]}>
+                    <TouchableOpacity style={[mstyles.buttonBlue, {flex:0.3,marginLeft:5}]} 
+                        onPress={this.searchButtonClick}>
                             <Text style={[mstyles.textStyle,{fontSize: typography.FONT_SIZE_16}]}>
                                 Search
                             </Text>
                     </TouchableOpacity>
                 </View>
                 <FlatList  contentContainerStyle={{paddingBottom:15}}
-                    data={InventoryData}
+                    data={this.state.InventoryFlatListData}
                     renderItem={renderItem}
                     keyExtractor={item => item.id}
                 />
+                <Loader
+                    loading={this.state.isloading} />
             </View>
         )
+    }
+
+    
+    searchButtonClick = () => {
+        if(this.state.selectedContainer!=""){
+            const arrTempSearch = []
+            this.state.InventoryData.map((item, i) => {
+                if(item.name==this.state.selectedContainer){
+                    arrTempSearch.push(item)
+                    this.setState({InventoryFlatListData: arrTempSearch});
+                }
+            });
+        }
+        else{
+            Helping.showToastMessage("Please select any container")
+        }
+    }
+
+
+
+    getInventoryList(){
+        this.setState({isloading: !this.state.isloading});
+        firestore().collection(Constant.DbInventory)
+        .get()
+        .then(querySnapshot => {
+                //console.log('Total users: ', querySnapshot.size);
+                const arrTemp = this.state.InventoryData.slice()
+                const arrDDownTemp = this.state.DropDownArray.slice()
+                querySnapshot.forEach(documentSnapshot => {
+                    console.log('User ID: ', documentSnapshot.id, documentSnapshot.data());
+                    arrTemp.push(documentSnapshot.data())
+                    arrDDownTemp.push({"label":documentSnapshot.data().name,value:documentSnapshot.data().name})
+                });
+                this.setState({InventoryData: arrTemp});
+                this.setState({InventoryFlatListData: arrTemp});
+                this.setState({DropDownArray: arrDDownTemp});
+                //console.log('Last Item: ', this.state.InventoryData[0]);
+        })
+        .catch((error) => {
+            console.log('Unable to Connect to Server'+error)
+        })
+        .done(()=>{
+            console.log('Completed');
+            this.setState({isloading: !this.state.isloading});
+        });
     }
 }
 
@@ -82,7 +135,7 @@ const renderItem = ({ item }) => (
                                     Time To Refil
                                 </Text>
                                 <Text style={[mstyles.textDropDownStyle,{fontSize: typography.FONT_SIZE_14,color:colors.HINT}]}>
-                                    04:30 PM
+                                    {item.timeToRefill}
                                 </Text>
                             </View>
                             <View style={{flex:0.4}}>
@@ -90,7 +143,7 @@ const renderItem = ({ item }) => (
                                     Date To Refil
                                 </Text>
                                 <Text style={[mstyles.textDropDownStyle,{fontSize: typography.FONT_SIZE_14,color:colors.HINT}]}>
-                                    11/23/2020
+                                    {item.dateToRefill}
                                 </Text>
                             </View>
                         </View>
@@ -98,7 +151,7 @@ const renderItem = ({ item }) => (
                             Weight (lbs)
                         </Text>
                         <Text style={[mstyles.textDropDownStyle,{fontSize: typography.FONT_SIZE_14,color:colors.HINT}]}>
-                            10
+                            {item.weight}
                         </Text>
                     </View>
                 </View>

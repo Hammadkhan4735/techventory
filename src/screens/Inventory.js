@@ -1,11 +1,12 @@
 import React, { Component } from 'react'
-import {StyleSheet, Text, View ,FlatList} from 'react-native'
+import {StyleSheet, Text, View ,FlatList,ActivityIndicator} from 'react-native'
 import {typography, colors} from '../styles';
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
 import firestore from '@react-native-firebase/firestore';
-import * as Constant from '../utils/Constants'
+import * as Constant from '../utils/Constants';
+import Loader from '../components/Loader';
 
-import { utils } from '@react-native-firebase/app';
+
 
 
 const InventoryDataDumy = [
@@ -26,9 +27,7 @@ export default class Inventory extends Component {
     constructor() {
         super()
         this.state = {
-           clientName: '',
-           blynkToken: '',
-           selectedContainer:'',
+           isloading:true,
            InventoryData:[]
         }
         
@@ -41,14 +40,18 @@ export default class Inventory extends Component {
             <View  style={mstyles.container}>
                 <FlatList  contentContainerStyle={{paddingBottom:15}}
                     data={this.state.InventoryData}
+                    visible={false}
                     renderItem={renderItem}
                     keyExtractor={item => item.id}
                 />
+                <Loader
+                    loading={this.state.isloading} />
             </View>
         )
     }
 
     getInventoryList(){
+        this.setState({isloading: !this.state.isloading});
         firestore().collection(Constant.DbInventory)
         .get()
         .then(querySnapshot => {
@@ -66,7 +69,8 @@ export default class Inventory extends Component {
         })
         .done(()=>{
             console.log('Completed');
-          });
+            this.setState({isloading: !this.state.isloading});
+        });
     }
     
 }
@@ -160,7 +164,7 @@ const mstyles = StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: colors.PRIMARY,
-      
+
     },
     layerView: {
         width:'85%',
@@ -215,5 +219,14 @@ const mstyles = StyleSheet.create({
         fontWeight: typography.FONT_WEIGHT_REGULAR,
         fontSize: typography.FONT_SIZE_14,
         color: colors.HINT,
+      },
+      spinnerStyle:{
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
+        alignItems: 'center',
+        justifyContent: 'center' 
       }
   });
