@@ -41,14 +41,14 @@ export default class Settings extends Component {
                     </Text>
                     <View style={mstyles.cardView}>
                         <TouchableOpacity style={mstyles.buttonPurple}
-                        onPress={this.addContainer}>
+                        onPress={this.removeContainer}>
                             <SvgUri  width="10" height="10" svgXmlData={Images.ic_minus} />
                         </TouchableOpacity>
                         <Text style={[mstyles.textStyle, {marginLeft:10,marginRight:10}]}>
                             {this.state.InventoryData.length}
                         </Text>
                         <TouchableOpacity style={mstyles.buttonPurple} 
-                        onPress={this.removeContainer}>
+                        onPress={this.addContainer}>
                             <SvgUri  width="10" height="10" svgXmlData={Images.ic_plus} />
                         </TouchableOpacity>
                     </View>
@@ -132,6 +132,7 @@ export default class Settings extends Component {
     getInventoryList(){
         this.setState({isloading: !this.state.isloading});
         firestore().collection(Constant.DbInventory)
+        .orderBy('createdAt', 'asc')
         .get()
         .then(querySnapshot => {
                 //console.log('Total users: ', querySnapshot.size);
@@ -142,8 +143,8 @@ export default class Settings extends Component {
                     arrTemp.push(documentSnapshot.data())
                     arrDDownTemp.push({label:documentSnapshot.data().name,value:documentSnapshot.data().id})
                 });
-                this.setState({InventoryData: arrTemp});
-                this.setState({DropDownArray: arrDDownTemp});
+                this.setState({InventoryData: arrTemp,DropDownArray: arrDDownTemp});
+        
                 //console.log('Last Item: ', this.state.InventoryData[0]);
         })
         .catch((error) => {
@@ -181,6 +182,7 @@ export default class Settings extends Component {
                     }
                 });
                 
+                
                 this.mcontroller.selectItem(this.state.newName);
                 
                 this.setState({InventoryData: arrTemp,
@@ -210,28 +212,31 @@ export default class Settings extends Component {
     addContainer = () => {
         if(this.state.InventoryData.length<50){
             this.setState({isloading: !this.state.isloading});
-            firestore().collection(Constant.DbInventory).doc(this.state.selectedContainerID)
-            .update({name: this.state.newName})
+           
+            var utcString = Helping.getCurrentDateTimeInUtcFormat()
+
+            var ref=firestore().collection(Constant.DbInventory).doc();
+         
+            
+            var containerObj={
+                id:ref.id,
+                name: 'Container '+(this.state.InventoryData.length+1),
+                timeToRefill:'',
+                dateToRefill:'',
+                weight:'0',
+                createdAt:utcString //'2021-01-03 00:00:00'
+              }
+            firestore().collection(Constant.DbInventory).doc(ref.id)
+            .set(containerObj)
             .then(() => {
                 let arrTemp = this.state.InventoryData.slice()
                 let arrDDownTemp = this.state.DropDownArray.slice()
-                this.state.InventoryData.map((item, i) => {
-                    if(item.id==this.state.selectedContainerID){
-                        arrTemp[i].name=this.state.newName
-                        arrDDownTemp[i].label=this.state.newName
-                        console.log('Last Item: ', arrDDownTemp[i]);
-                        //this.setState({selectedContainer: arrDDownTemp[i]});
-                    }
-                });
+                arrTemp.push(containerObj)
+                arrDDownTemp.push({ label:containerObj.name, value:containerObj.id})
+                this.setState({InventoryData: arrTemp,DropDownArray: arrDDownTemp});
                 
-                this.mcontroller.selectItem(this.state.newName);
-                
-                this.setState({InventoryData: arrTemp,
-                    DropDownArray: arrDDownTemp,
-                    newName:''
-                });
-                
-                Helping.showToastMessage("Updated successfully")
+               
+                Helping.showToastMessage("Add successfully")
             })
             .catch((error) => {
                 Helping.showToastMessage("Unable to Connect to Server"+error)
@@ -246,7 +251,29 @@ export default class Settings extends Component {
     }
 
     removeContainer = () => {
-        
+        if(this.state.InventoryData.length>1){
+            this.setState({isloading: !this.state.isloading});
+
+            var lastDocId=this.state.InventoryData[this.state.InventoryData.length-1].id
+            firestore().collection(Constant.DbInventory).doc(lastDocId)
+            .delete()
+            .then(() => {
+                let arrTemp = this.state.InventoryData.slice()
+                let arrDDownTemp = this.state.DropDownArray.slice()
+                arrTemp.splice(this.state.InventoryData.length-1, 1);
+                arrDDownTemp.splice(this.state.InventoryData.length-1, 1);
+                this.setState({InventoryData: arrTemp,DropDownArray: arrDDownTemp});
+                
+               
+                Helping.showToastMessage("Remove successfully")
+            })
+            .catch((error) => {
+                Helping.showToastMessage("Unable to Connect to Server"+error)
+            })
+            .done(()=>{
+                this.setState({isloading: !this.state.isloading});
+            });
+        }
     }
 
     saveBlynkToken = () => {

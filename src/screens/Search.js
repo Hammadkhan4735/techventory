@@ -98,6 +98,7 @@ export default class Search extends Component {
     getInventoryList(){
         this.setState({isloading: !this.state.isloading});
         firestore().collection(Constant.DbInventory)
+        .orderBy('createdAt', 'asc')
         .get()
         .then(querySnapshot => {
                 //console.log('Total users: ', querySnapshot.size);
@@ -135,7 +136,7 @@ const renderItem = ({ item }) => (
                                     Time To Refil
                                 </Text>
                                 <Text style={[mstyles.textDropDownStyle,{fontSize: typography.FONT_SIZE_14,color:colors.HINT}]}>
-                                    {item.timeToRefill}
+                                    {Helping.convertUtcDateIntoLocalTime(item.timeToRefill)}
                                 </Text>
                             </View>
                             <View style={{flex:0.4}}>
@@ -143,7 +144,7 @@ const renderItem = ({ item }) => (
                                     Date To Refil
                                 </Text>
                                 <Text style={[mstyles.textDropDownStyle,{fontSize: typography.FONT_SIZE_14,color:colors.HINT}]}>
-                                    {item.dateToRefill}
+                                    {Helping.convertUtcDateIntoLocalDate(item.dateToRefill)}
                                 </Text>
                             </View>
                         </View>

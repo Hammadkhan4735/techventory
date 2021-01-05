@@ -5,6 +5,8 @@ import MultiSlider from '@ptomasroos/react-native-multi-slider';
 import * as Constant from '../utils/Constants';
 import Loader from '../components/Loader';
 import firestore from '@react-native-firebase/firestore';
+import * as Helping from '../utils/Helping';
+
 
 const InventoryDataDummy = [
     { id: 'bd7acbea', name: 'Flour'},
@@ -60,10 +62,9 @@ export default class PlaceOrder extends Component {
                 //console.log('Last Item: ', this.state.InventoryData[0]);
         })
         .catch((error) => {
-            console.log('Unable to Connect to Server'+error)
+            Helping.showToastMessage("Unable to Connect to Server"+error)
         })
         .done(()=>{
-            console.log('Completed');
             this.setState({isloading: !this.state.isloading});
         });
     }
@@ -81,7 +82,7 @@ const renderItem = ({ item }) => (
                                 Time To Refil
                             </Text>
                             <Text style={[mstyles.textStyleSmall,{marginLeft:5}]}>
-                                {item.timeToRefill}
+                                {Helping.convertUtcDateIntoLocalTime(item.timeToRefill)}
                             </Text>
                         </View>
                         <View style={{flex:0.2}}></View>
@@ -90,7 +91,7 @@ const renderItem = ({ item }) => (
                                 Date To Refil
                             </Text>
                             <Text style={[mstyles.textStyleSmall,{marginLeft:5}]}>
-                                {item.dateToRefill}
+                                {Helping.convertUtcDateIntoLocalDate(item.dateToRefill)}
                             </Text>
                         </View>
                     </View>
