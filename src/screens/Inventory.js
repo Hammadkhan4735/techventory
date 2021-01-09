@@ -9,16 +9,7 @@ import * as Helping from '../utils/Helping';
 
 
 
-const InventoryDataDumy = [
-    { id: 'bd7acbea', name: 'Rice'},
-    { id: '3ac68afc', name: 'Maze'},
-    { id: '58694a0f', name: 'Vegetables'},
-    { id: '58694s0f', name: 'Powder'},
-    { id: '586941d0f', name: 'Maze'},
-    { id: '586asdqqf', name: 'Beans'},
-    { id: '586a0f', name: 'Flour'},
-    { id: '58694414a0f', name: 'Beans'},
-  ];
+
 
  
 
@@ -98,7 +89,7 @@ const renderItem = ({ item }) => (
                                 Date To Refil
                             </Text>
                             <Text style={[mstyles.textStyleSmall,{marginLeft:5}]}>
-                                { Helping.convertUtcDateIntoLocalDate(item.dateToRefill)}
+                                { Helping.convertUtcDateIntoLocalDate(item.dateToRefill+'T'+item.timeToRefill)}
                             </Text>
                         </View>
                     </View>

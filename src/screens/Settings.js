@@ -10,7 +10,7 @@ import * as Constant from '../utils/Constants';
 import Loader from '../components/Loader';
 import firestore from '@react-native-firebase/firestore';
 
-let mcontroller;
+
 
 export default class Settings extends Component {
     
@@ -26,7 +26,7 @@ export default class Settings extends Component {
            InventoryData:[],
            DropDownArray:[],
         }
-
+        this.controller;
         this.getInventoryList()
      }
 
@@ -64,7 +64,7 @@ export default class Settings extends Component {
                         </Text>
                         <DropDownPicker style={mstyles.textInputStyle}
                             items={this.state.DropDownArray}
-                            controller={instance => mcontroller = instance}
+                            controller={instance => this.controller = instance}
                             defaultValue={this.state.selectedContainer}
                             containerStyle={{height: 50}}
                             itemStyle={{justifyContent: 'flex-start'}}
@@ -80,6 +80,11 @@ export default class Settings extends Component {
                                
                                 selectedContainerID: item.value,
                             })}
+                            onChangeList={(items, callback) => {
+                                this.setState({
+                                    DropDownArray:items // items: items
+                                }, callback);
+                            }}
                         />
                         <Text style={[mstyles.textStyle, {marginLeft:2,marginRight:10,marginBottom:10,marginTop:15}]}>
                             New Name
@@ -166,6 +171,8 @@ export default class Settings extends Component {
     }
 
     saveContainerName = () => {
+        
+            
         if(this.state.selectedContainerID!=""&&this.state.newName!=""){
             this.setState({isloading: !this.state.isloading});
             firestore().collection(Constant.DbInventory).doc(this.state.selectedContainerID)
@@ -183,13 +190,18 @@ export default class Settings extends Component {
                 });
                 
                 
-                this.mcontroller.selectItem(this.state.newName);
+                //this.mcontroller.selectItem(this.state.newName);
+              
+              
                 
                 this.setState({InventoryData: arrTemp,
                     DropDownArray: arrDDownTemp,
                     newName:''
                 });
-                
+
+                //this.controller.selectItem(this.state.DropDownArray[0]);
+                //this.controller.reset();
+               
                 Helping.showToastMessage("Updated successfully")
             })
             .catch((error) => {
@@ -236,7 +248,7 @@ export default class Settings extends Component {
                 this.setState({InventoryData: arrTemp,DropDownArray: arrDDownTemp});
                 
                
-                Helping.showToastMessage("Add successfully")
+                Helping.showToastMessage("Container added successfully")
             })
             .catch((error) => {
                 Helping.showToastMessage("Unable to Connect to Server"+error)
@@ -265,7 +277,7 @@ export default class Settings extends Component {
                 this.setState({InventoryData: arrTemp,DropDownArray: arrDDownTemp});
                 
                
-                Helping.showToastMessage("Remove successfully")
+                Helping.showToastMessage("Container removed successfully")
             })
             .catch((error) => {
                 Helping.showToastMessage("Unable to Connect to Server"+error)

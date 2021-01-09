@@ -78,7 +78,6 @@ const App: () => React$Node = () => {
           component={PlaceOrder}
           options={{
             headerBackImage: () => <NavBarLeftButton />,
-            headerRight: () => <NavBarRightButton />,
             headerStyle: mstyles.headerBackground,
             headerTitleStyle: mstyles.headerText,
           }}
@@ -93,12 +92,15 @@ const NavBarLeftButton = () => {
 };
 
 const NavBarRightButton = () => {
-  return <TouchableOpacity style={mstyles.buttonBlue}>
+  return <TouchableOpacity style={mstyles.buttonBlue} onPress={PlaceOrder.exportDataToCsvn}>
   <Text style={[mstyles.textStyle,{paddingTop:5,paddingBottom:5,paddingLeft:10,paddingRight:10}]}>
       Export
   </Text>
 </TouchableOpacity>;
 };
+
+
+
 
 const mstyles = StyleSheet.create({
   headerText: {

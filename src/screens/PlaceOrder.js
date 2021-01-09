@@ -1,36 +1,42 @@
 import React, { Component } from 'react'
-import {StyleSheet, Text, View ,FlatList,TouchableOpacity,ScrollView} from 'react-native'
+import {StyleSheet, Text, View ,FlatList,TouchableOpacity,ScrollView,PermissionsAndroid} from 'react-native'
 import {typography, colors} from '../styles';
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
 import * as Constant from '../utils/Constants';
 import Loader from '../components/Loader';
 import firestore from '@react-native-firebase/firestore';
 import * as Helping from '../utils/Helping';
+import RNFetchBlob from 'react-native-fetch-blob';
+import SvgUri from 'react-native-svg-uri';
+import Images from '../assets/Images';
 
 
-const InventoryDataDummy = [
-    { id: 'bd7acbea', name: 'Flour'},
-    { id: '58694s0f', name: 'Powder'},
-    { id: '586941d0f', name: 'Maze'},
-    { id: '594a0f', name: 'Container 4'},
-    { id: '5869411a0f', name: 'Container 5'},
-    { id: '3ac68afc', name: 'Rice'},
-    { id: '58694a0f', name: 'Vegetables'},
-    { id: '586asdqqf', name: 'Beans'},
-  ];
 
 export default class PlaceOrder extends Component {
-    
-    constructor() {
-        super()
+    constructor(props) {
+        super(props)
         this.state = {
             isloading:true,
            InventoryData:[]
         }
 
+        
+        this.props.navigation.setOptions({ 
+           headerRight: () => ( 
+           <TouchableOpacity style={mstyles.buttonBlue} onPress={this.requestCameraPermission}>
+            <Text style={[mstyles.textStyleExportBtn,{paddingTop:5,paddingBottom:5,paddingLeft:10,paddingRight:10}]}>
+              Export
+            </Text>
+          </TouchableOpacity>) 
+        })
+
         this.getInventoryListForOrder()
      }
-     
+
+    
+    
+    
+
     render() {
         return (
             <View  style={mstyles.container}>
@@ -45,6 +51,47 @@ export default class PlaceOrder extends Component {
         )
     } 
 
+
+    requestCameraPermission = async () => {
+        try {
+          if (Platform.OS === "android") {
+              const granted = await PermissionsAndroid.requestMultiple(
+                  [PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+                  PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE]
+              );
+              if (granted['android.permission.WRITE_EXTERNAL_STORAGE'] && 
+                  granted['android.permission.READ_EXTERNAL_STORAGE'] === PermissionsAndroid.RESULTS.GRANTED) {
+                  this.exportDataToCsvn() 
+              } else {
+                  Helping.showToastMessage("permission denied")
+              }
+          }
+        } catch (err) {
+            Helping.showToastMessage("permission error"+err)
+        }
+    }
+
+    exportDataToCsvn = () => {
+       
+          const data = this.state.InventoryData.slice()
+          // construct csvString
+          const headerString = 'NAME,TIMETOREFILL,DATETOREFILL,WEIGHT\n';
+          const rowString = data.map(item => `${item.name},${item.timeToRefill},${item.dateToRefill},${item.weight}\n`).join('');
+          const csvString = `${headerString}${rowString}`;
+          
+          // write the current list of answers to a local csv file
+          const pathToWrite = `${RNFetchBlob.fs.dirs.DownloadDir}/data.csv`;
+          console.log('pathToWrite', pathToWrite);
+          // pathToWrite /storage/emulated/0/Download/data.csv
+          RNFetchBlob.fs
+            .writeFile(pathToWrite, csvString, 'utf8')
+            .then(() => {
+              console.log(`wrote file ${pathToWrite}`);
+              Helping.showToastMessage("Data exported successfully \n\nFile location : "+pathToWrite)
+              // wrote file /storage/emulated/0/Download/data.csv
+            })
+            .catch(error => Helping.showToastMessage("Error in exporting data. please try again"));
+    }
 
     getInventoryListForOrder(){
         this.setState({isloading: !this.state.isloading});
@@ -68,7 +115,12 @@ export default class PlaceOrder extends Component {
             this.setState({isloading: !this.state.isloading});
         });
     }
+
+
 }
+
+
+  
 
 const renderItem = ({ item }) => (
     <View style={[mstyles.layerView,{ alignSelf:'center'}]}>
@@ -91,7 +143,7 @@ const renderItem = ({ item }) => (
                                 Date To Refil
                             </Text>
                             <Text style={[mstyles.textStyleSmall,{marginLeft:5}]}>
-                                {Helping.convertUtcDateIntoLocalDate(item.dateToRefill)}
+                                {Helping.convertUtcDateIntoLocalDate(item.dateToRefill+'T'+item.timeToRefill)}
                             </Text>
                         </View>
                     </View>
@@ -213,6 +265,31 @@ const mstyles = StyleSheet.create({
         fontWeight: typography.FONT_WEIGHT_REGULAR,
         fontSize: typography.FONT_SIZE_14,
         color: colors.HINT,
-      }
+      },
+      headerBackground: {
+        backgroundColor: colors.PRIMARY,
+          elevation: 0,
+          shadowOpacity: 0,
+       
+      },
+      headerText: {
+        fontFamily: typography.FONT_FAMILY_BOLD,
+        fontWeight: typography.FONT_WEIGHT_REGULAR,
+        fontSize: typography.FONT_SIZE_18,
+        color: colors.WHITE,
+      },
+      buttonBlue: {
+        borderRadius:4,
+        marginRight:10,
+        backgroundColor: colors.BLUEDARK,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    textStyleExportBtn: {
+      fontFamily: typography.FONT_FAMILY_BOLD,
+      fontWeight: typography.FONT_WEIGHT_REGULAR,
+      fontSize: typography.FONT_SIZE_14,
+      color: colors.WHITE,
+    },
   });
 

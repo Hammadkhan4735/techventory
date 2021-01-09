@@ -10,16 +10,7 @@ import firestore from '@react-native-firebase/firestore';
 import Inventory from './Inventory';
 
 
-const InventoryDataDummy = [
-    { id: 'bd7acbea', name: 'Flour'},
-    { id: '3ac68afc', name: 'Rice'},
-    { id: '58694a0f', name: 'Vegetables'},
-    { id: '594a0f', name: 'Container 4'},
-    { id: '5869411a0f', name: 'Container 5'},
-    { id: '58694s0f', name: 'Powder'},
-    { id: '586941d0f', name: 'Maze'},
-    { id: '586asdqqf', name: 'Beans'},
-  ];
+
 
 export default class Search extends Component {
     constructor() {
@@ -144,7 +135,7 @@ const renderItem = ({ item }) => (
                                     Date To Refil
                                 </Text>
                                 <Text style={[mstyles.textDropDownStyle,{fontSize: typography.FONT_SIZE_14,color:colors.HINT}]}>
-                                    {Helping.convertUtcDateIntoLocalDate(item.dateToRefill)}
+                                    {Helping.convertUtcDateIntoLocalDate(item.dateToRefill+'T'+item.timeToRefill)}
                                 </Text>
                             </View>
                         </View>

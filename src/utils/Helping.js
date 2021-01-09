@@ -19,12 +19,12 @@ export const getCurrentDateTimeInUtcFormat = () => {
     const hour = ("0" + mDate.getHours()).slice(-2)
     const minute = ("0" + mDate.getMinutes()).slice(-2)
     const second = ("0" + mDate.getSeconds()).slice(-2)
-    console.log('year: ',year);
+    /* console.log('year: ',year);
     console.log('Month: ',month);
     console.log('day: ',day);
     console.log('hour: ',hour);
     console.log('minute: ',minute);
-    console.log('minute: ',`${year}-${month}-${day}T${hour}:${minute}:${second}`);
+    console.log('minute: ',`${year}-${month}-${day}T${hour}:${minute}:${second}`); */
     // Step: 2 Make a JS date object with the data
     const dateObject = new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}`)
   
@@ -46,7 +46,7 @@ export const getCurrentDateTimeInUtcFormat = () => {
 
 
   export const convertUtcDateIntoLocalTime = (UtcTimeString) => {
-    if(UtcTimeString=='') return 'NONE'
+    if(UtcTimeString=='') return 'NaN'
 
     var mDate = new Date();
     var offset= mDate.getTimezoneOffset() / 60;
@@ -72,12 +72,12 @@ export const getCurrentDateTimeInUtcFormat = () => {
 
 
   export const convertUtcDateIntoLocalDate = (UtcDateString) => {
-    if(UtcDateString=='') return 'NONE'
+    if(UtcDateString=='T') return 'NaN'
     
     var mDate = new Date();
     var offset= mDate.getTimezoneOffset() / 60;
     var offsetReverse=offset*-1
-    console.log('date: ',UtcDateString);
+    console.log('acasss12312312date: ',UtcDateString);
     const dateObject = new Date(UtcDateString)
   
     // Step 3: Get the current hours from the object
@@ -85,6 +85,11 @@ export const getCurrentDateTimeInUtcFormat = () => {
   
     // Step 4: Add the offset to the date object
     dateObject.setHours(currentHours + offsetReverse)
+
+    if((currentHours+offsetReverse)>=24){
+      dateObject.setDate(dateObject.getDate() + 1)
+    }
+    console.log('asd=dj2999---: ',(currentHours+offsetReverse));
   
     // Step 5: stringify the date object, replace the T with a space and slice off the seconds.
     const newDateString = dateObject
