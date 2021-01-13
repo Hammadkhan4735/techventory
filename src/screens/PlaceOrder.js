@@ -45,8 +45,10 @@ export default class PlaceOrder extends Component {
                     renderItem={renderItem}
                     keyExtractor={item => item.id}
                 />
+                { this.state.isloading && 
                 <Loader
                     loading={this.state.isloading} />
+                }
             </View>
         )
     } 

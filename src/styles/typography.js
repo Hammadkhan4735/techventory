@@ -1,7 +1,7 @@
 import { scaleFont } from './mixins';
 
 // FONT FAMILY
-export const FONT_FAMILY_REGULAR = 'CenturyGothic-Regular';
+export const FONT_FAMILY_REGULAR = 'CenturyGothic';
 export const FONT_FAMILY_BOLD = 'CenturyGothic-Bold';
 
 // FONT WEIGHT

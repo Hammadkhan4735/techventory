@@ -127,8 +127,10 @@ export default class Settings extends Component {
                 </View>
               
                 </ScrollView>
+                { this.state.isloading && 
                 <Loader
                     loading={this.state.isloading} />
+                }
             </View>
         )
     }
@@ -337,6 +339,7 @@ const mstyles = StyleSheet.create({
         width: '100%', 
         paddingLeft:10 , 
         paddingRight : 10, 
+        height: 50,
         backgroundColor: colors.PRIMARY,
         borderTopLeftRadius: 0, borderTopRightRadius: 0,
         borderBottomLeftRadius: 0, borderBottomRightRadius: 0,

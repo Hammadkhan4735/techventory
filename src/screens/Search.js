@@ -30,7 +30,7 @@ export default class Search extends Component {
     render() {
         return (
             <View style={mstyles.container}>
-                <View style={{flexDirection:'row',height: 45,width:'90%',alignSelf:'center',marginTop:20,marginBottom:5}}>
+                <View style={{flexDirection:'row',zIndex: 3,height: 45,width:'90%',alignSelf:'center',marginTop:20,marginBottom:5}}>
                     <View style={{flex:0.7,marginRight:5}}>
                     <DropDownPicker style={mstyles.textInputStyle}
                             items={this.state.DropDownArray}
@@ -43,7 +43,7 @@ export default class Search extends Component {
                             placeholder={'Select Container'}
                             placeholderStyle={{color:colors.GRAY_DARK}}
                             dropDownStyle={{backgroundColor: colors.PRIMARYLIGHT,
-                                borderBottomLeftRadius: 0, borderBottomRightRadius: 0,
+                                borderBottomLeftRadius: 0,borderBottomRightRadius: 0,
                                 borderColor:colors.PRIMARY,borderWidth:2}}
                             onChangeItem={item => this.setState({
                                 selectedContainer: item.value
@@ -57,13 +57,15 @@ export default class Search extends Component {
                             </Text>
                     </TouchableOpacity>
                 </View>
-                <FlatList  contentContainerStyle={{paddingBottom:15}}
+                <FlatList  contentContainerStyle={{paddingBottom:15,zIndex: 2}}
                     data={this.state.InventoryFlatListData}
                     renderItem={renderItem}
                     keyExtractor={item => item.id}
                 />
+                { this.state.isloading && 
                 <Loader
                     loading={this.state.isloading} />
+                }
             </View>
         )
     }
@@ -191,6 +193,7 @@ const mstyles = StyleSheet.create({
         fontWeight: typography.FONT_WEIGHT_REGULAR,
         fontSize: typography.FONT_SIZE_16,
         color: colors.WHITE,
+        
         
     },
     textDropDownStyle:{

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {colors} from '../styles';
 import {
-  StyleSheet,
+  StyleSheet,Modal,View,
   ActivityIndicator
 } from 'react-native';
 
@@ -12,14 +12,13 @@ const Loader = props => {
     <ActivityIndicator  size="large" 
                     style={styles.spinnerStyle}
                     color={colors.WHITE}
-                    hidesWhenStopped={loading}
                     animating={loading}
                 />
   )
 }
 
 const styles = StyleSheet.create({
-  
+
   spinnerStyle:{
     position: 'absolute',
     left: 0,

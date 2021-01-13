@@ -31,17 +31,20 @@ export default class Inventory extends Component {
             <View  style={mstyles.container}>
                 <FlatList  contentContainerStyle={{paddingBottom:15}}
                     data={this.state.InventoryData}
-                    visible={false}
+                   
                     renderItem={renderItem}
                     keyExtractor={item => item.id}
                 />
+                { this.state.isloading && 
                 <Loader
                     loading={this.state.isloading} />
+                }
             </View>
         )
     }
 
     getInventoryList(){
+        console.log('start');
         this.setState({isloading: !this.state.isloading});
         firestore().collection(Constant.DbInventory)
         .orderBy('createdAt', 'asc')
@@ -54,6 +57,7 @@ export default class Inventory extends Component {
                     arrTemp.push(documentSnapshot.data())
                 });
                 this.setState({InventoryData: arrTemp});
+                console.log('The end iansdnaisdn asindiasdniasndiansd ashdajsdhajsdh');
                 //console.log('Last Item: ', this.state.InventoryData[0]);
         })
         .catch((error) => {

@@ -51,6 +51,7 @@ const App: () => React$Node = () => {
           component={Inventory}
           options={{
             headerBackImage: () => <NavBarLeftButton />,
+            headerBackTitleVisible: false,
             headerStyle: mstyles.headerBackground,
             headerTitleStyle: mstyles.headerText,
           }}
@@ -61,6 +62,7 @@ const App: () => React$Node = () => {
           options={{
             headerBackImage: () => <NavBarLeftButton />,
             headerStyle: mstyles.headerBackground,
+            headerBackTitleVisible: false,
             headerTitleStyle: mstyles.headerText,
           }}
         />
@@ -70,6 +72,7 @@ const App: () => React$Node = () => {
           options={{
             headerBackImage: () => <NavBarLeftButton />,
             headerStyle: mstyles.headerBackground,
+            headerBackTitleVisible: false,
             headerTitleStyle: mstyles.headerText,
           }}
         />
@@ -79,6 +82,7 @@ const App: () => React$Node = () => {
           options={{
             headerBackImage: () => <NavBarLeftButton />,
             headerStyle: mstyles.headerBackground,
+            headerBackTitleVisible: false,
             headerTitleStyle: mstyles.headerText,
           }}
         />
