@@ -128,7 +128,7 @@ const renderItem = ({ item }) => (
                                 <Text style={[mstyles.textStyle,{fontSize: typography.FONT_SIZE_16}]}>
                                     Time To Refil
                                 </Text>
-                                <Text style={[mstyles.textDropDownStyle,{fontSize: typography.FONT_SIZE_14,color:colors.HINT}]}>
+                                <Text style={[mstyles.textDropDownStyle,{fontSize: typography.FONT_SIZE_14,color:colors.HINT,marginTop:3,marginBottom:7}]}>
                                     {Helping.convertUtcDateIntoLocalTime(item.timeToRefill)}
                                 </Text>
                             </View>
@@ -136,7 +136,7 @@ const renderItem = ({ item }) => (
                                 <Text style={[mstyles.textStyle,{fontSize: typography.FONT_SIZE_16}]}>
                                     Date To Refil
                                 </Text>
-                                <Text style={[mstyles.textDropDownStyle,{fontSize: typography.FONT_SIZE_14,color:colors.HINT}]}>
+                                <Text style={[mstyles.textDropDownStyle,{fontSize: typography.FONT_SIZE_14,color:colors.HINT,marginTop:3,marginBottom:7}]}>
                                     {Helping.convertUtcDateIntoLocalDate(item.dateToRefill+'T'+item.timeToRefill)}
                                 </Text>
                             </View>
@@ -144,7 +144,7 @@ const renderItem = ({ item }) => (
                         <Text style={[mstyles.textStyle,{fontSize: typography.FONT_SIZE_16}]}>
                             Weight (lbs)
                         </Text>
-                        <Text style={[mstyles.textDropDownStyle,{fontSize: typography.FONT_SIZE_14,color:colors.HINT}]}>
+                        <Text style={[mstyles.textDropDownStyle,{fontSize: typography.FONT_SIZE_14,color:colors.HINT,marginTop:3}]}>
                             {item.weight}
                         </Text>
                     </View>
@@ -204,13 +204,13 @@ const mstyles = StyleSheet.create({
     },
     textStyle: {
         fontFamily: typography.FONT_FAMILY_BOLD,
-        fontWeight: typography.FONT_WEIGHT_REGULAR,
+        fontWeight: (Platform.OS === 'ios')? typography.FONT_WEIGHT_BOLD: typography.FONT_WEIGHT_REGULAR,
         fontSize: typography.FONT_SIZE_18,
         color: colors.WHITE,
       },
       textStyleHeading: {
           fontFamily: typography.FONT_FAMILY_BOLD,
-          fontWeight: typography.FONT_WEIGHT_REGULAR,
+          fontWeight: (Platform.OS === 'ios')? typography.FONT_WEIGHT_BOLD: typography.FONT_WEIGHT_REGULAR,
           fontSize: typography.FONT_SIZE_22,
           color: colors.WHITE,
         },

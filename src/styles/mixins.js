@@ -2,8 +2,12 @@ import {Dimensions,PixelRatio} from 'react-native';
 
 const WINDOW_WIDTH = Dimensions.get('window').width;
 const guidelineBaseWidth = 375;
+const optionalPadding = 60;
 
 export const scaleSize = size => (WINDOW_WIDTH/guidelineBaseWidth) * size;
+
+
+export const mySliderLength = WINDOW_WIDTH - 2 * optionalPadding;
 
 export const scaleFont = size => size * PixelRatio.getFontScale();
 

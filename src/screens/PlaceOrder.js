@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import {StyleSheet, Text, View ,FlatList,TouchableOpacity,ScrollView,PermissionsAndroid} from 'react-native'
-import {typography, colors} from '../styles';
+import {typography, colors,mixins} from '../styles';
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
 import * as Constant from '../utils/Constants';
 import Loader from '../components/Loader';
@@ -68,6 +68,9 @@ export default class PlaceOrder extends Component {
                   Helping.showToastMessage("permission denied")
               }
           }
+          else {
+            this.exportDataToCsvn() 
+          }
         } catch (err) {
             Helping.showToastMessage("permission error"+err)
         }
@@ -80,9 +83,14 @@ export default class PlaceOrder extends Component {
           const headerString = 'NAME,TIMETOREFILL,DATETOREFILL,WEIGHT\n';
           const rowString = data.map(item => `${item.name},${item.timeToRefill},${item.dateToRefill},${item.weight}\n`).join('');
           const csvString = `${headerString}${rowString}`;
-          
+          var pathToWrite ="";
           // write the current list of answers to a local csv file
-          const pathToWrite = `${RNFetchBlob.fs.dirs.DownloadDir}/data.csv`;
+          if (Platform.OS === "android") {
+              pathToWrite = `${RNFetchBlob.fs.dirs.DownloadDir}/TechVentory.csv`;
+          }
+          else{
+              pathToWrite = `${RNFetchBlob.fs.dirs.DocumentDir}/TechVentory.csv`;
+          }
           console.log('pathToWrite', pathToWrite);
           // pathToWrite /storage/emulated/0/Download/data.csv
           RNFetchBlob.fs
@@ -135,7 +143,7 @@ const renderItem = ({ item }) => (
                             <Text style={[mstyles.textStyle,{fontSize: typography.FONT_SIZE_16}]}>
                                 Time To Refil
                             </Text>
-                            <Text style={[mstyles.textStyleSmall,{marginLeft:5}]}>
+                            <Text style={[mstyles.textStyleSmall,{marginLeft:5,marginTop:3,marginBottom:7}]}>
                                 {Helping.convertUtcDateIntoLocalTime(item.timeToRefill)}
                             </Text>
                         </View>
@@ -144,7 +152,7 @@ const renderItem = ({ item }) => (
                             <Text style={[mstyles.textStyle,{fontSize: typography.FONT_SIZE_16}]}>
                                 Date To Refil
                             </Text>
-                            <Text style={[mstyles.textStyleSmall,{marginLeft:5}]}>
+                            <Text style={[mstyles.textStyleSmall,{marginLeft:5,marginTop:3,marginBottom:7}]}>
                                 {Helping.convertUtcDateIntoLocalDate(item.dateToRefill+'T'+item.timeToRefill)}
                             </Text>
                         </View>
@@ -160,7 +168,7 @@ const renderItem = ({ item }) => (
                         step={10}
                         selectedStyle={{backgroundColor: colors.SECONDARY}}
                         unselectedStyle={{backgroundColor: colors.SECONDARY}} 
-                        sliderLength={250}
+                        sliderLength={mixins.mySliderLength}
                         trackStyle={{height: 16,
                             backgroundColor: colors.SECONDARY,
                             borderRadius: 10}}
@@ -243,7 +251,7 @@ const mstyles = StyleSheet.create({
       },
       seekBarLabelStyle: {
         fontFamily: typography.FONT_FAMILY_BOLD,
-        fontWeight: typography.FONT_WEIGHT_REGULAR,
+        fontWeight: (Platform.OS === 'ios')? typography.FONT_WEIGHT_BOLD: typography.FONT_WEIGHT_REGULAR,
         fontSize: typography.FONT_SIZE_12,
         flex:0.09,
         color:colors.HINT,
@@ -252,13 +260,13 @@ const mstyles = StyleSheet.create({
 
     textStyle: {
       fontFamily: typography.FONT_FAMILY_BOLD,
-      fontWeight: typography.FONT_WEIGHT_REGULAR,
+      fontWeight: (Platform.OS === 'ios')? typography.FONT_WEIGHT_BOLD: typography.FONT_WEIGHT_REGULAR,
       fontSize: typography.FONT_SIZE_18,
       color: colors.WHITE,
     },
     textStyleHeading: {
         fontFamily: typography.FONT_FAMILY_BOLD,
-        fontWeight: typography.FONT_WEIGHT_REGULAR,
+        fontWeight: (Platform.OS === 'ios')? typography.FONT_WEIGHT_BOLD: typography.FONT_WEIGHT_REGULAR,
         fontSize: typography.FONT_SIZE_22,
         color: colors.WHITE,
       },
@@ -276,7 +284,7 @@ const mstyles = StyleSheet.create({
       },
       headerText: {
         fontFamily: typography.FONT_FAMILY_BOLD,
-        fontWeight: typography.FONT_WEIGHT_REGULAR,
+        fontWeight: (Platform.OS === 'ios')? typography.FONT_WEIGHT_BOLD: typography.FONT_WEIGHT_REGULAR,
         fontSize: typography.FONT_SIZE_18,
         color: colors.WHITE,
       },
@@ -289,7 +297,7 @@ const mstyles = StyleSheet.create({
     },
     textStyleExportBtn: {
       fontFamily: typography.FONT_FAMILY_BOLD,
-      fontWeight: typography.FONT_WEIGHT_REGULAR,
+      fontWeight: (Platform.OS === 'ios')? typography.FONT_WEIGHT_BOLD: typography.FONT_WEIGHT_REGULAR,
       fontSize: typography.FONT_SIZE_14,
       color: colors.WHITE,
     },

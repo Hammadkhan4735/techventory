@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import {StyleSheet, Text, View ,FlatList,ActivityIndicator} from 'react-native'
-import {typography, colors} from '../styles';
+import {typography, colors, mixins} from '../styles';
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
 import firestore from '@react-native-firebase/firestore';
 import * as Constant from '../utils/Constants';
@@ -83,7 +83,7 @@ const renderItem = ({ item }) => (
                             <Text style={[mstyles.textStyle,{fontSize: typography.FONT_SIZE_16}]}>
                                 Time To Refil
                             </Text>
-                            <Text style={[mstyles.textStyleSmall,{marginLeft:5}]}>                                
+                            <Text style={[mstyles.textStyleSmall,{marginLeft:5,marginTop:3,marginBottom:7}]}>                                
                                 {Helping.convertUtcDateIntoLocalTime(item.timeToRefill)}
                             </Text>
                         </View>
@@ -92,7 +92,7 @@ const renderItem = ({ item }) => (
                             <Text style={[mstyles.textStyle,{fontSize: typography.FONT_SIZE_16}]}>
                                 Date To Refil
                             </Text>
-                            <Text style={[mstyles.textStyleSmall,{marginLeft:5}]}>
+                            <Text style={[mstyles.textStyleSmall,{marginLeft:5,marginTop:3,marginBottom:7}]}>
                                 { Helping.convertUtcDateIntoLocalDate(item.dateToRefill+'T'+item.timeToRefill)}
                             </Text>
                         </View>
@@ -108,7 +108,7 @@ const renderItem = ({ item }) => (
                         step={10}
                         selectedStyle={{backgroundColor: colors.SECONDARY}}
                         unselectedStyle={{backgroundColor: colors.SECONDARY}} 
-                        sliderLength={250}
+                        sliderLength={mixins.mySliderLength}
                         trackStyle={{height: 16,
                             backgroundColor: colors.SECONDARY,
                             borderRadius: 10}}
@@ -191,7 +191,7 @@ const mstyles = StyleSheet.create({
     },
     seekBarLabelStyle: {
         fontFamily: typography.FONT_FAMILY_BOLD,
-        fontWeight: typography.FONT_WEIGHT_REGULAR,
+        fontWeight: (Platform.OS === 'ios')? typography.FONT_WEIGHT_BOLD: typography.FONT_WEIGHT_REGULAR,
         fontSize: typography.FONT_SIZE_12,
         flex:0.09,
         color:colors.HINT,
@@ -200,13 +200,13 @@ const mstyles = StyleSheet.create({
 
     textStyle: {
       fontFamily: typography.FONT_FAMILY_BOLD,
-      fontWeight: typography.FONT_WEIGHT_REGULAR,
+      fontWeight: (Platform.OS === 'ios')? typography.FONT_WEIGHT_BOLD: typography.FONT_WEIGHT_REGULAR,
       fontSize: typography.FONT_SIZE_18,
       color: colors.WHITE,
     },
     textStyleHeading: {
         fontFamily: typography.FONT_FAMILY_BOLD,
-        fontWeight: typography.FONT_WEIGHT_REGULAR,
+        fontWeight: (Platform.OS === 'ios')? typography.FONT_WEIGHT_BOLD: typography.FONT_WEIGHT_REGULAR,
         fontSize: typography.FONT_SIZE_22,
         color: colors.WHITE,
       },
@@ -226,3 +226,7 @@ const mstyles = StyleSheet.create({
         justifyContent: 'center' 
       }
   });
+
+
+
+ 

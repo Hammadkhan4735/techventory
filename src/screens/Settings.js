@@ -358,13 +358,13 @@ const mstyles = StyleSheet.create({
     },
     textStyle: {
         fontFamily: typography.FONT_FAMILY_BOLD,
-        fontWeight: typography.FONT_WEIGHT_REGULAR,
+        fontWeight: (Platform.OS === 'ios')? typography.FONT_WEIGHT_BOLD: typography.FONT_WEIGHT_REGULAR,
         fontSize: typography.FONT_SIZE_18,
         color: colors.WHITE,
       },
       textStyleHeading: {
           fontFamily: typography.FONT_FAMILY_BOLD,
-          fontWeight: typography.FONT_WEIGHT_REGULAR,
+          fontWeight: (Platform.OS === 'ios')? typography.FONT_WEIGHT_BOLD: typography.FONT_WEIGHT_REGULAR,
           fontSize: typography.FONT_SIZE_22,
           color: colors.WHITE,
         },

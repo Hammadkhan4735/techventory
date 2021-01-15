@@ -36,7 +36,7 @@ export default class MainHome extends Component {
             </Text>
           </TouchableOpacity>
         </View>
-        <View style={mstyles.horizontallayerGrid}>
+        <View style={mstyles.horizontallayerGrid2}>
           <TouchableOpacity style={[mstyles.boxView, {marginRight:'4%', backgroundColor:colors.PURPLE}]}
           onPress={() => this.props.navigation.navigate('PlaceOrder')}>
             <SvgUri style={{marginBottom:10}} width="40" height="40" svgXmlData={Images.ic_placeorder} />
@@ -80,7 +80,17 @@ const mstyles = StyleSheet.create({
     flex: 0.4,
     flexDirection:'row',
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'flex-end',
+  },
+  horizontallayerGrid2: {
+    
+    marginLeft:'8%',
+    marginRight:'8%',
+    marginBottom:'8%',
+    flex: 0.4,
+    flexDirection:'row',
+    justifyContent: 'center',
+    alignItems: 'flex-start',
   },
   boxView: {
     flex: 0.5,
@@ -106,7 +116,7 @@ const mstyles = StyleSheet.create({
   },
   textStyle: {
     fontFamily: typography.FONT_FAMILY_BOLD,
-    fontWeight: typography.FONT_WEIGHT_REGULAR,
+    fontWeight: (Platform.OS === 'ios')?typography.FONT_WEIGHT_BOLD:typography.FONT_WEIGHT_REGULAR,
     fontSize: typography.FONT_SIZE_18,
     color: colors.WHITE,
   }
