@@ -43,7 +43,7 @@ export default class Inventory extends Component {
 
     getInventoryList(){
         this.setState({isloading: !this.state.isloading});
-        firestore().collection(Constant.DbInventory)
+        /* firestore().collection(Constant.DbInventory)
         .orderBy('createdAt', 'asc')
         .get()
         .then(querySnapshot => {
@@ -62,7 +62,27 @@ export default class Inventory extends Component {
         .done(()=>{
             console.log('Completed');
             this.setState({isloading: !this.state.isloading});
+        }); */
+        firestore().collection(Constant.DbInventory)
+        .orderBy('createdAt', 'asc')
+        .onSnapshot({
+            error: (e) => {
+                this.setState({isloading: false})
+            },
+            next: (querySnapshot) => {
+                //console.log('Total users: ', querySnapshot.size);
+                this.setState({isloading: false})
+                const arrTemp = []
+                querySnapshot.forEach(documentSnapshot => {
+                    console.log('User ID: ', documentSnapshot.id, documentSnapshot.data());
+                    arrTemp.push(documentSnapshot.data())
+                    
+                });
+                this.setState({InventoryData: arrTemp});
+                //console.log('Last Item: ', this.state.InventoryData[0]);
+            },
         });
+        
     }
     
 }
