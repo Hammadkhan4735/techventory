@@ -10,6 +10,7 @@
       android:label="@string/app_name"
       android:icon="@mipmap/ic_launcher_n"
       android:roundIcon="@mipmap/ic_launcher_n"
+      android:requestLegacyExternalStorage="true"
       android:allowBackup="false"
       android:theme="@style/AppTheme">
       <activity
@@ -24,6 +25,15 @@
         </intent-filter>
       </activity>
       <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
+      <provider
+        android:name="androidx.core.content.FileProvider"
+        android:authorities="${applicationId}.provider"
+        android:exported="false"
+        android:grantUriPermissions="true">
+        <meta-data
+            android:name="android.support.FILE_PROVIDER_PATHS"
+            android:resource="@xml/filepaths"/>
+    </provider>
     </application>
 
 </manifest>

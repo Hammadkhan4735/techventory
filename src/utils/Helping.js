@@ -47,11 +47,15 @@ export const getCurrentDateTimeInUtcFormat = () => {
 
   export const convertUtcDateIntoLocalTime = (UtcTimeString) => {
     if(UtcTimeString=='') return 'NaN'
-
+    
+    try {
     var mDate = new Date();
     var offset= mDate.getTimezoneOffset() / 60;
     var offsetReverse=offset*-1
     console.log('time: ',UtcTimeString);
+    
+      
+    
     const dateObject = new Date('0000-01-01T'+UtcTimeString)
   
     // Step 3: Get the current hours from the object
@@ -59,21 +63,25 @@ export const getCurrentDateTimeInUtcFormat = () => {
   
     // Step 4: Add the offset to the date object
     dateObject.setHours(currentHours + offsetReverse)
-  
+    
     // Step 5: stringify the date object, replace the T with a space and slice off the seconds.
     const newDateString = dateObject
       .toISOString()
       .replace('T', ' ')
       .slice(11, 19)
   
-    // Step 6: Return the new formatted date string with the added offset
-    return `${newDateString}`
+      // Step 6: Return the new formatted date string with the added offset
+      return `${newDateString}`
+    } catch (error) {
+      return 'NaN'
+    }
   }
 
 
   export const convertUtcDateIntoLocalDate = (UtcDateString) => {
     if(UtcDateString=='T') return 'NaN'
-    
+
+    try {
     var mDate = new Date();
     var offset= mDate.getTimezoneOffset() / 60;
     var offsetReverse=offset*-1
@@ -90,13 +98,18 @@ export const getCurrentDateTimeInUtcFormat = () => {
       dateObject.setDate(dateObject.getDate() + 1)
     }
     console.log('asd=dj2999---: ',(currentHours+offsetReverse));
-  
-    // Step 5: stringify the date object, replace the T with a space and slice off the seconds.
-    const newDateString = dateObject
+
+      const newDateString = dateObject
       .toISOString()
       .replace('T', ' ')
       .slice(0, 10)
+    
   
+
     // Step 6: Return the new formatted date string with the added offset
-    return `${newDateString}`
+      return `${newDateString}`
+
+    } catch (err) {
+      return 'NaN'
+    }
   }

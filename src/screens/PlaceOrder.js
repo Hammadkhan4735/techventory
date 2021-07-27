@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import {StyleSheet, Text, View ,FlatList,TouchableOpacity,ScrollView,PermissionsAndroid} from 'react-native'
+import {StyleSheet, Text, View ,FlatList,TouchableOpacity,ScrollView,PermissionsAndroid,Alert} from 'react-native'
 import {typography, colors} from '../styles';
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
 import * as Constant from '../utils/Constants';
@@ -80,14 +80,30 @@ export default class PlaceOrder extends Component {
           const csvString = `${headerString}${rowString}`;
           
           // write the current list of answers to a local csv file
-          const pathToWrite = `${RNFetchBlob.fs.dirs.DownloadDir}/data.csv`;
+          const pathToWrite = `${RNFetchBlob.fs.dirs.DownloadDir}/inventory_order.csv`;
           console.log('pathToWrite', pathToWrite);
           // pathToWrite /storage/emulated/0/Download/data.csv
           RNFetchBlob.fs
             .writeFile(pathToWrite, csvString, 'utf8')
             .then(() => {
               console.log(`wrote file ${pathToWrite}`);
-              Helping.showToastMessage("Data exported successfully \n\nFile location : "+pathToWrite)
+              Alert.alert(
+                "Exported Successfully",
+                "Data exported successfully \n\nFile location : "+pathToWrite,
+                [
+                  { text: "OK", onPress: () => {
+                      console.log("OK Pressed")
+                      /* if (Platform.OS === 'android') {
+                    
+                        RNFetchBlob.android.actionViewIntent(pathToWrite, 'text/html');
+                      } else {
+                        RNFetchBlob.ios.openDocument(pathToWrite);
+                      } */
+                    } 
+                    }
+                ]
+              );
+              //Helping.showToastMessage("Data exported successfully \n\nFile location : "+pathToWrite)
               // wrote file /storage/emulated/0/Download/data.csv
             })
             .catch(error => Helping.showToastMessage("Error in exporting data. please try again"));
@@ -95,7 +111,7 @@ export default class PlaceOrder extends Component {
 
     getInventoryListForOrder(){
         this.setState({isloading: !this.state.isloading});
-        firestore().collection(Constant.DbInventory)
+        /* firestore().collection(Constant.DbInventory)
         .where('weight', '<=', '20')   // this threshold will be add in setting later on
         .get()
         .then(querySnapshot => {
@@ -113,6 +129,26 @@ export default class PlaceOrder extends Component {
         })
         .done(()=>{
             this.setState({isloading: !this.state.isloading});
+        }); */
+        firestore().collection(Constant.DbInventory)
+        .where('weight', '<=', '20') 
+        .onSnapshot({
+            error: (e) => {
+                this.setState({isloading: false})
+                Helping.showToastMessage("Unable to Connect to Server "+e)
+            },
+            next: (querySnapshot) => {
+                //console.log('Total users: ', querySnapshot.size);
+                this.setState({isloading: false})
+                const arrTemp = []
+                querySnapshot.forEach(documentSnapshot => {
+                    console.log('User ID: ', documentSnapshot.id, documentSnapshot.data());
+                    arrTemp.push(documentSnapshot.data())
+                    
+                });
+                this.setState({InventoryData: arrTemp});
+                //console.log('Last Item: ', this.state.InventoryData[0]);
+            },
         });
     }
 
@@ -208,7 +244,6 @@ const MySeekbarMarker = () => {
 
 
 const mstyles = StyleSheet.create({
-    
     container: {
         flex: 1,
         backgroundColor: colors.PRIMARY,

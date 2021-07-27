@@ -136,7 +136,7 @@ export default class Settings extends Component {
 
     getInventoryList(){
         this.setState({isloading: !this.state.isloading});
-        firestore().collection(Constant.DbInventory)
+        /* firestore().collection(Constant.DbInventory)
         .orderBy('createdAt', 'asc')
         .get()
         .then(querySnapshot => {
@@ -158,6 +158,27 @@ export default class Settings extends Component {
         .done(()=>{
             console.log('Completed');
             this.setState({isloading: !this.state.isloading});
+        }); */
+
+        firestore().collection(Constant.DbInventory)
+        .orderBy('createdAt', 'asc') 
+        .onSnapshot({
+            error: (e) => {
+                this.setState({isloading: false})
+                Helping.showToastMessage("Unable to Connect to Server "+e)
+            },
+            next: (querySnapshot) => {
+                this.setState({isloading: false})
+                const arrTemp = []
+                const arrDDownTemp = []
+                querySnapshot.forEach(documentSnapshot => {
+                    //console.log('User ID: ', documentSnapshot.id, documentSnapshot.data());
+                    arrTemp.push(documentSnapshot.data())
+                    arrDDownTemp.push({label:documentSnapshot.data().name,value:documentSnapshot.data().id})
+                });
+                this.setState({InventoryData: arrTemp,DropDownArray: arrDDownTemp});
+                //console.log('Last Item: ', this.state.InventoryData[0]);
+            },
         });
     }
 

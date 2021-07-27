@@ -68,6 +68,7 @@ export default class Inventory extends Component {
         .onSnapshot({
             error: (e) => {
                 this.setState({isloading: false})
+                Helping.showToastMessage("Unable to Connect to Server "+e)
             },
             next: (querySnapshot) => {
                 //console.log('Total users: ', querySnapshot.size);
