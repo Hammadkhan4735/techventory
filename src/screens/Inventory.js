@@ -1,26 +1,32 @@
 import React, { Component } from 'react'
-import {StyleSheet, Text, View ,FlatList,ActivityIndicator} from 'react-native'
+import {StyleSheet, Text, View ,FlatList,TouchableOpacity,PermissionsAndroid,Alert} from 'react-native'
 import {typography, colors} from '../styles';
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
 import firestore from '@react-native-firebase/firestore';
-import * as Constant from '../utils/Constants';
 import Loader from '../components/Loader';
 import * as Helping from '../utils/Helping';
-
-
-
-
+import * as Constant from '../utils/Constants';
+import RNFetchBlob from 'react-native-fetch-blob';
 
  
 
 export default class Inventory extends Component {
     
-    constructor() {
-        super()
+    constructor(props) {
+        super(props)
         this.state = {
            isloading:true,
            InventoryData:[]
         }
+
+        this.props.navigation.setOptions({ 
+            headerRight: () => ( 
+            <TouchableOpacity style={mstyles.buttonBlue} onPress={this.requestPermission}>
+             <Text style={[mstyles.textStyleExportBtn,{paddingTop:5,paddingBottom:5,paddingLeft:10,paddingRight:10}]}>
+               Export
+             </Text>
+           </TouchableOpacity>) 
+         })
         
         this.getInventoryList()
      }
@@ -40,7 +46,7 @@ export default class Inventory extends Component {
             </View>
         )
     }
-
+ 
     getInventoryList(){
         this.setState({isloading: !this.state.isloading});
         /* firestore().collection(Constant.DbInventory)
@@ -77,13 +83,88 @@ export default class Inventory extends Component {
                 querySnapshot.forEach(documentSnapshot => {
                     console.log('User ID: ', documentSnapshot.id, documentSnapshot.data());
                     arrTemp.push(documentSnapshot.data())
-                    
                 });
                 this.setState({InventoryData: arrTemp});
                 //console.log('Last Item: ', this.state.InventoryData[0]);
             },
         });
         
+    }
+
+
+    requestPermission = async () => {
+        try {
+          if (Platform.OS === "android") {
+              const granted = await PermissionsAndroid.requestMultiple(
+                  [PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+                  PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE]
+              );
+              if (granted['android.permission.WRITE_EXTERNAL_STORAGE'] && 
+                  granted['android.permission.READ_EXTERNAL_STORAGE'] === PermissionsAndroid.RESULTS.GRANTED) {
+                  this.getInventoryListAndExportInExcel() 
+              } else {
+                  Helping.showToastMessage("permission denied")
+              }
+          }
+        } catch (err) {
+            Helping.showToastMessage("permission error"+err)
+        }
+    }
+    
+    getInventoryListAndExportInExcel(){
+      this.setState({isloading: !this.state.isloading});
+      firestore().collection(Constant.DbInventory)
+      .orderBy('createdAt', 'asc')
+      .get()
+      .then(querySnapshot => {
+              //console.log('Total users: ', querySnapshot.size);
+              const arrTemp = this.state.InventoryData.slice()
+              querySnapshot.forEach(documentSnapshot => {
+                  console.log('User ID: ', documentSnapshot.id, documentSnapshot.data());
+                  arrTemp.push(documentSnapshot.data())
+              });
+              this.setState({InventoryData: arrTemp});
+              this.exportDataToCsvn()
+              //console.log('Last Item: ', this.state.InventoryData[0]);
+      })
+      .catch((error) => {
+          Helping.showToastMessage("Unable to Connect to Server"+error)
+      })
+      .done(()=>{
+          console.log('Completed');
+          this.setState({isloading: !this.state.isloading});
+      });
+    }
+    
+    exportDataToCsvn = () => {
+          const data = this.state.InventoryData.slice()
+          // construct csvString
+          const headerString = 'NAME,TIMETOREFILL,DATETOREFILL,WEIGHT\n';
+          const rowString = data.map(item => `${item.name},${item.timeToRefill},${item.dateToRefill},${item.weight}\n`).join('');
+          const csvString = `${headerString}${rowString}`;
+          
+          // write the current list of answers to a local csv file
+          const pathToWrite = `${RNFetchBlob.fs.dirs.DownloadDir}/Inventory.csv`;
+          console.log('pathToWrite', pathToWrite);
+          // pathToWrite /storage/emulated/0/Download/data.csv
+          RNFetchBlob.fs
+            .writeFile(pathToWrite, csvString, 'utf8')
+            .then(() => {
+              console.log(`wrote file ${pathToWrite}`);
+              Alert.alert(
+                "Exported Successfully",
+                "Inventory list data exported successfully \n\nFile location : "+pathToWrite,
+                [
+                  { text: "OK", onPress: () => {
+                      console.log("OK Pressed")
+                      //RNFetchBlob.android.actionViewIntent(pathToWrite, "*");
+    
+                    } 
+                  }
+                ]
+              );
+            })
+            .catch(error => Helping.showToastMessage("Error in exporting data. please try again"));
     }
     
 }
@@ -195,7 +276,19 @@ const mstyles = StyleSheet.create({
         shadowRadius: 2,  
         elevation: 5
     },
-   
+    buttonBlue: {
+        borderRadius:4,
+        marginRight:10,
+        backgroundColor: colors.BLUEDARK,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    textStyleExportBtn: {
+        fontFamily: typography.FONT_FAMILY_BOLD,
+        fontWeight: typography.FONT_WEIGHT_REGULAR,
+        fontSize: typography.FONT_SIZE_14,
+        color: colors.WHITE,
+      },
     markerStyle: {
       width: 15,
       height:28,

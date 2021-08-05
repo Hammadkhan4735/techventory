@@ -80,7 +80,7 @@ export default class PlaceOrder extends Component {
           const csvString = `${headerString}${rowString}`;
           
           // write the current list of answers to a local csv file
-          const pathToWrite = `${RNFetchBlob.fs.dirs.DownloadDir}/inventory_order.csv`;
+          const pathToWrite = `${RNFetchBlob.fs.dirs.DownloadDir}/PlaceOrder.csv`;
           console.log('pathToWrite', pathToWrite);
           // pathToWrite /storage/emulated/0/Download/data.csv
           RNFetchBlob.fs
@@ -89,7 +89,7 @@ export default class PlaceOrder extends Component {
               console.log(`wrote file ${pathToWrite}`);
               Alert.alert(
                 "Exported Successfully",
-                "Data exported successfully \n\nFile location : "+pathToWrite,
+                "Place Order list data exported successfully \n\nFile location : "+pathToWrite,
                 [
                   { text: "OK", onPress: () => {
                       console.log("OK Pressed")
@@ -153,13 +153,25 @@ export default class PlaceOrder extends Component {
     }
 
 
+    selectUnSelectItem(id) {
+        let arrtemp = this.state.InventoryData.slice()
+        for (let item of arrtemp) {
+            if (item.id == id) {
+                item.isSelected = (item.isSelected == null) ? true : !item.isSelected;
+                break;
+            }
+        }
+        this.setState({InventoryData: arrTemp});
+    }
+
+
 }
 
 
   
 
 const renderItem = ({ item }) => (
-    <View style={[mstyles.layerView,{ alignSelf:'center'}]}>
+    <View style={[mstyles.layerView,{ alignSelf:'center'}]}  onPress={this.selectUnSelectItem(item.id)}>
                 <Text style={[mstyles.textStyleHeading, {marginTop:15,marginLeft:5,marginBottom:10}]}>
                     {item.name}
                 </Text>

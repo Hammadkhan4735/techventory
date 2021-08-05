@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import {StyleSheet, Text, View ,TextInput,TouchableOpacity,ScrollView,
-    ToastAndroid,Platform,Alert} from 'react-native'
+    ToastAndroid,Platform,Alert,Linking} from 'react-native'
 import {typography, colors} from '../styles';
 import Images from '../assets/Images';
 import SvgUri from 'react-native-svg-uri';
@@ -104,9 +104,16 @@ export default class Settings extends Component {
                         </TouchableOpacity>
                        
                     </View>
-                   
-                    <View style={[mstyles.cardView,{flexDirection:'column',marginTop:20,marginBottom:20}]}>
-                       
+
+                    <TouchableOpacity style={[mstyles.buttonBlue, {marginBottom:5,marginTop:40}]}
+                        onPress={this.gotoWifiPortal}>
+                            <Text style={[mstyles.textStyle,{fontSize: typography.FONT_SIZE_16}]}>
+                                Wifi Portal
+                            </Text>
+                    </TouchableOpacity>
+
+                    <View style={[mstyles.cardView,{flexDirection:'column',marginTop:20,marginBottom:20,
+                                display: 'none'}]}>
                         <Text style={[mstyles.textStyle, {marginLeft:2,marginRight:10,marginBottom:10,marginTop:5}]}>
                             Blynk Token
                         </Text>
@@ -309,8 +316,8 @@ export default class Settings extends Component {
         }
     }
 
-    saveBlynkToken = () => {
-        
+    gotoWifiPortal = () => {
+        Linking.openURL('https://google.com');
     }
 }
 

@@ -34,7 +34,7 @@ export default class MainHome extends Component {
         <View style={[mstyles.layerDivide, {flex:0.55}]}>
         <View style={mstyles.horizontallayerGrid}>
           <TouchableOpacity style={[mstyles.boxView, {marginRight:'4%', backgroundColor:colors.BROWN}]}
-          onPress={() => /* this.props.navigation.navigate('Inventory') */this.requestCameraPermission()}>
+          onPress={() =>  this.props.navigation.navigate('Inventory') }>
             <SvgUri style={{marginBottom:10}} width="40" height="40" svgXmlData={Images.ic_inventory} />
             <Text style={mstyles.textStyle}>
               Inventory
@@ -73,84 +73,6 @@ export default class MainHome extends Component {
               loading={this.state.isloading} />
       </View>
     );
-  }
-
-
-
-
-  requestCameraPermission = async () => {
-    try {
-      if (Platform.OS === "android") {
-          const granted = await PermissionsAndroid.requestMultiple(
-              [PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-              PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE]
-          );
-          if (granted['android.permission.WRITE_EXTERNAL_STORAGE'] && 
-              granted['android.permission.READ_EXTERNAL_STORAGE'] === PermissionsAndroid.RESULTS.GRANTED) {
-              this.getInventoryListAndExportInExcel() 
-          } else {
-              Helping.showToastMessage("permission denied")
-          }
-      }
-    } catch (err) {
-        Helping.showToastMessage("permission error"+err)
-    }
-}
-
-getInventoryListAndExportInExcel(){
-  this.setState({isloading: !this.state.isloading});
-  firestore().collection(Constant.DbInventory)
-  .orderBy('createdAt', 'asc')
-  .get()
-  .then(querySnapshot => {
-          //console.log('Total users: ', querySnapshot.size);
-          const arrTemp = this.state.InventoryData.slice()
-          querySnapshot.forEach(documentSnapshot => {
-              console.log('User ID: ', documentSnapshot.id, documentSnapshot.data());
-              arrTemp.push(documentSnapshot.data())
-          });
-          this.setState({InventoryData: arrTemp});
-          this.exportDataToCsvn()
-          //console.log('Last Item: ', this.state.InventoryData[0]);
-  })
-  .catch((error) => {
-      Helping.showToastMessage("Unable to Connect to Server"+error)
-  })
-  .done(()=>{
-      console.log('Completed');
-      this.setState({isloading: !this.state.isloading});
-  });
-}
-
-exportDataToCsvn = () => {
-      const data = this.state.InventoryData.slice()
-      // construct csvString
-      const headerString = 'NAME,TIMETOREFILL,DATETOREFILL,WEIGHT\n';
-      const rowString = data.map(item => `${item.name},${item.timeToRefill},${item.dateToRefill},${item.weight}\n`).join('');
-      const csvString = `${headerString}${rowString}`;
-      
-      // write the current list of answers to a local csv file
-      const pathToWrite = `${RNFetchBlob.fs.dirs.DownloadDir}/inventory.csv`;
-      console.log('pathToWrite', pathToWrite);
-      // pathToWrite /storage/emulated/0/Download/data.csv
-      RNFetchBlob.fs
-        .writeFile(pathToWrite, csvString, 'utf8')
-        .then(() => {
-          console.log(`wrote file ${pathToWrite}`);
-          Alert.alert(
-            "Exported Successfully",
-            "Inventory list exported successfully \n\nFile location : "+pathToWrite,
-            [
-              { text: "OK", onPress: () => {
-                  console.log("OK Pressed")
-                } 
-                }
-            ]
-          );
-          //Helping.showToastMessage("Data exported successfully \n\nFile location : "+pathToWrite)
-          // wrote file /storage/emulated/0/Download/data.csv
-        })
-        .catch(error => Helping.showToastMessage("Error in exporting data. please try again"));
   }
 }
 
