@@ -19,7 +19,6 @@ export default class PlaceOrder extends Component {
             isloading:true,
            InventoryData:[]
         }
-
         
         this.props.navigation.setOptions({ 
            headerRight: () => ( 
@@ -30,19 +29,18 @@ export default class PlaceOrder extends Component {
           </TouchableOpacity>) 
         })
 
+        
+
         this.getInventoryListForOrder()
      }
 
     
-    
-    
-
-    render() {
+     render() {
         return (
             <View  style={mstyles.container}>
                 <FlatList  contentContainerStyle={{paddingBottom:15}}
                     data={this.state.InventoryData}
-                    renderItem={renderItem}
+                    renderItem={item => this.renderItem(item)}
                     keyExtractor={item => item.id}
                 />
                 <Loader
@@ -50,6 +48,9 @@ export default class PlaceOrder extends Component {
             </View>
         )
     } 
+    
+
+    
 
 
     requestCameraPermission = async () => {
@@ -75,12 +76,19 @@ export default class PlaceOrder extends Component {
        
           const data = this.state.InventoryData.slice()
           // construct csvString
-          const headerString = 'NAME,TIMETOREFILL,DATETOREFILL,WEIGHT\n';
-          const rowString = data.map(item => `${item.name},${item.timeToRefill},${item.dateToRefill},${item.weight}\n`).join('');
+          const headerString = 'NAME,TIME_TO_REFILL,DATE_TO_REFILL,WEIGHT\n';
+          //const rowString = data.map(item=> `${item.name},${item.timeToRefill},${item.dateToRefill},${item.weight}\n`).join('');
+            var rowString=''
+            data.map((item, i) => {
+                if(item.isSelected){
+                    rowString=rowString+`${item.name},${item.timeToRefill},${item.dateToRefill},${item.weight}\n`
+                }
+            });
+            console.log("CVS string",rowString);
           const csvString = `${headerString}${rowString}`;
           
           // write the current list of answers to a local csv file
-          const pathToWrite = `${RNFetchBlob.fs.dirs.DownloadDir}/PlaceOrder.csv`;
+          const pathToWrite = `${RNFetchBlob.fs.dirs.DownloadDir}/place_order.csv`;
           console.log('pathToWrite', pathToWrite);
           // pathToWrite /storage/emulated/0/Download/data.csv
           RNFetchBlob.fs
@@ -153,29 +161,119 @@ export default class PlaceOrder extends Component {
     }
 
 
-    selectUnSelectItem(id) {
-        let arrtemp = this.state.InventoryData.slice()
-        for (let item of arrtemp) {
+    selectUnSelectItem = id => {
+        console.log('sdawww:');
+        let arrtemps = this.state.InventoryData.slice()
+        for (let item of arrtemps) {
+            console.log('My ITem 1111======='+id);
             if (item.id == id) {
+                console.log('MAtched correct');
                 item.isSelected = (item.isSelected == null) ? true : !item.isSelected;
                 break;
             }
         }
-        this.setState({InventoryData: arrTemp});
+        this.setState({InventoryData: arrtemps});
     }
 
 
+    renderItem = ({ item }) => (
+        <TouchableOpacity style={[mstyles.layerView,{ alignSelf:'center'}]} onPress={() => this.selectUnSelectItem(item.id)}
+            activeOpacity={0.7}>
+                    <Text style={[mstyles.textStyleHeading, {marginTop:15,marginLeft:5,marginBottom:10}]}>
+                        {item.name}
+                    </Text>
+                    <View style={[mstyles.cardView,{borderWidth:item.isSelected?2:0}]}>
+                        <View style={{flexDirection:'row',marginBottom:15}}>
+                            <View style={{flex:0.4}}>
+                                <Text style={[mstyles.textStyle,{fontSize: typography.FONT_SIZE_16}]}>
+                                    Time To Refil
+                                </Text>
+                                <Text style={[mstyles.textStyleSmall,{marginLeft:5}]}>
+                                    {Helping.convertUtcDateIntoLocalTime(item.timeToRefill)}
+                                </Text>
+                            </View>
+                            <View style={{flex:0.2}}></View>
+                            <View style={{flex:0.4}}>
+                                <Text style={[mstyles.textStyle,{fontSize: typography.FONT_SIZE_16}]}>
+                                    Date To Refil
+                                </Text>
+                                <Text style={[mstyles.textStyleSmall,{marginLeft:5}]}>
+                                    {Helping.convertUtcDateIntoLocalDate(item.dateToRefill+'T'+item.timeToRefill)}
+                                </Text>
+                            </View>
+                        </View>
+                        <View style={{width:'100%'}}>
+                        <Text style={[mstyles.textStyle,{fontSize: typography.FONT_SIZE_16}]}>
+                            Weight 
+                        </Text>
+                        </View>
+                        <MultiSlider
+                            values={[parseInt(item.weight)]}
+                            snapped={true}
+                            step={10}
+                            selectedStyle={{backgroundColor: colors.SECONDARY}}
+                            unselectedStyle={{backgroundColor: colors.SECONDARY}} 
+                            sliderLength={250}
+                            trackStyle={{height: 16,
+                                backgroundColor: colors.SECONDARY,
+                                borderRadius: 10}}
+                            touchDimensions={{
+                                height: 40,
+                                width: 40,
+                                borderRadius: 10,
+                                slipDisplacement: 10}}
+                            customMarker={MySeekbarMarker}
+                            allowOverlap={false}
+                            enabledOne={false}
+                            min={0}
+                            max={100}
+                        />
+                        <View   style={{flexDirection:'row'}}>
+                        <Text style={[mstyles.seekBarLabelStyle, (item.weight >= 0 && item.weight < 10)  ? { color: 'white' } : null ]}>
+                                 0 </Text>
+                            <Text style={[mstyles.seekBarLabelStyle, (item.weight >= 10 && item.weight < 20) ? { color: 'white' } : null ]}>
+                                 10 </Text>
+                            <Text style={[mstyles.seekBarLabelStyle, (item.weight >= 20 && item.weight < 30) ? { color: 'white' } : null ]}>
+                                 20 </Text>
+                            <Text style={[mstyles.seekBarLabelStyle, (item.weight >= 30 && item.weight < 40) ? { color: 'white' } : null ]}>
+                                 30 </Text>
+                            <Text style={[mstyles.seekBarLabelStyle, (item.weight >= 40 && item.weight < 50) ? { color: 'white' } : null ]}>
+                                 40 </Text>
+                            <Text style={[mstyles.seekBarLabelStyle, (item.weight >= 50 && item.weight < 60) ? { color: 'white' } : null ]}>
+                                 50 </Text>
+                            <Text style={[mstyles.seekBarLabelStyle, (item.weight >= 60 && item.weight < 70) ? { color: 'white' } : null ]}>
+                                 60 </Text>
+                            <Text style={[mstyles.seekBarLabelStyle, (item.weight >= 70 && item.weight < 80) ? { color: 'white' } : null ]}>
+                                 70 </Text>
+                            <Text style={[mstyles.seekBarLabelStyle, (item.weight >= 80 && item.weight < 90) ? { color: 'white' } : null ]}>
+                                 80 </Text>
+                            <Text style={[mstyles.seekBarLabelStyle, (item.weight >= 90 && item.weight < 100) ? { color: 'white' } : null ]}>
+                                 90 </Text>
+                            <Text style={[mstyles.seekBarLabelStyle, (item.weight >= 100 && item.weight < 110) ? { color: 'white' } : null ]}>
+                                 100 </Text>
+                        </View>
+                    </View>
+                </TouchableOpacity>
+    );
+    MySeekbarMarker = () => {
+        return <View style={mstyles.markerStyle}>
+            </View>;
+    };
+
+
+    
+    
 }
 
 
   
 
-const renderItem = ({ item }) => (
-    <View style={[mstyles.layerView,{ alignSelf:'center'}]}  onPress={this.selectUnSelectItem(item.id)}>
+/* const renderItem = ({ item }) => (
+    <TouchableOpacity style={[mstyles.layerView,{ alignSelf:'center'}]} onPress={this.selectUnSelectItem(item.id)} >
                 <Text style={[mstyles.textStyleHeading, {marginTop:15,marginLeft:5,marginBottom:10}]}>
                     {item.name}
                 </Text>
-                <View style={mstyles.cardView}>
+                <View style={[mstyles.cardView,{borderWidth:item.isSelected?3:0}]}>
                     <View style={{flexDirection:'row',marginBottom:15}}>
                         <View style={{flex:0.4}}>
                             <Text style={[mstyles.textStyle,{fontSize: typography.FONT_SIZE_16}]}>
@@ -246,8 +344,8 @@ const renderItem = ({ item }) => (
                              100 </Text>
                     </View>
                 </View>
-            </View>
-);
+            </TouchableOpacity>
+); */
 
 const MySeekbarMarker = () => {
     return <View style={mstyles.markerStyle}>
@@ -270,8 +368,10 @@ const mstyles = StyleSheet.create({
           backgroundColor: colors.PRIMARYLIGHT,
           padding:15,
           borderRadius:4,
+          borderWidth: 0,
+          borderColor: "#FFF",
           shadowColor: '#000',
-          shadowOffset: { width: 0, height: 1 },
+          shadowOffset: { width: 3, height: 3 },
           shadowOpacity: 0.8,
           shadowRadius: 2,  
           elevation: 5

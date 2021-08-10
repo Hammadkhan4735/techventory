@@ -139,12 +139,12 @@ export default class Inventory extends Component {
     exportDataToCsvn = () => {
           const data = this.state.InventoryData.slice()
           // construct csvString
-          const headerString = 'NAME,TIMETOREFILL,DATETOREFILL,WEIGHT\n';
+          const headerString = 'NAME,TIME_TO_REFILL,DATE_TO_REFILL,WEIGHT\n';
           const rowString = data.map(item => `${item.name},${item.timeToRefill},${item.dateToRefill},${item.weight}\n`).join('');
           const csvString = `${headerString}${rowString}`;
           
           // write the current list of answers to a local csv file
-          const pathToWrite = `${RNFetchBlob.fs.dirs.DownloadDir}/Inventory.csv`;
+          const pathToWrite = `${RNFetchBlob.fs.dirs.DownloadDir}/inventory.csv`;
           console.log('pathToWrite', pathToWrite);
           // pathToWrite /storage/emulated/0/Download/data.csv
           RNFetchBlob.fs
