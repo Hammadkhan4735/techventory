@@ -22,7 +22,11 @@ export default class Settings extends Component {
         
            isloading:true,
            selectedContainer:'',
+           selectedRemoveContainer:'',
            selectedContainerID:'',
+           selectedRemoveContainerID:'',
+           wifiID:'',
+           wifiPassword:'',
            InventoryData:[],
            DropDownArray:[],
         }
@@ -55,7 +59,7 @@ export default class Settings extends Component {
                 </View>
 
                 <View style={mstyles.layerView}>
-                    <Text style={[mstyles.textStyleHeading, {marginTop:20,marginLeft:5,marginBottom:10}]}>
+                    <Text style={[mstyles.textStyleHeading, {marginTop:30,marginLeft:5,marginBottom:10}]}>
                         Change Container Name
                     </Text>
                     <View style={[mstyles.cardView,{flexDirection:'column'}]}>
@@ -104,13 +108,76 @@ export default class Settings extends Component {
                         </TouchableOpacity>
                        
                     </View>
-
-                    <TouchableOpacity style={[mstyles.buttonBlue, {marginBottom:5,marginTop:40}]}
-                        onPress={this.gotoWifiPortal}>
+                    <Text style={[mstyles.textStyleHeading, {marginTop:30,marginLeft:5,marginBottom:10}]}>
+                        Remove Container
+                    </Text>
+                    <View style={[mstyles.cardView,{flexDirection:'column'}]}>
+                        <DropDownPicker style={mstyles.textInputStyle}
+                            items={this.state.DropDownArray}
+                            controller={instance => this.controller = instance}
+                            defaultValue={this.state.selectedRemoveContainer}
+                            containerStyle={{height: 50}}
+                            itemStyle={{justifyContent: 'flex-start'}}
+                            labelStyle={mstyles.textDropDownStyle}
+                            arrowColor={colors.WHITE}
+                            activeLabelStyle={{color: colors.BROWN}}
+                            placeholder={'Select Container'}
+                            placeholderStyle={{color:colors.GRAY_DARK}}
+                            dropDownStyle={{backgroundColor: colors.PRIMARYLIGHT,
+                                borderBottomLeftRadius: 0, borderBottomRightRadius: 0,
+                                borderColor:colors.PRIMARY,borderWidth:2}}
+                            onChangeItem={item => this.setState({
+                                selectedRemoveContainerID: item.value,
+                            })}
+                            onChangeList={(items, callback) => {
+                                this.setState({
+                                    DropDownArray:items // items: items
+                                }, callback);
+                            }}
+                        />
+                        
+                        <TouchableOpacity style={[mstyles.buttonBlue, {marginBottom:5,marginTop:20}]}
+                        onPress={this.removeContainerInDb}>
                             <Text style={[mstyles.textStyle,{fontSize: typography.FONT_SIZE_16}]}>
-                                Wifi Portal
+                                Remove
                             </Text>
-                    </TouchableOpacity>
+                        </TouchableOpacity>
+                       
+                    </View>
+                    <Text style={[mstyles.textStyleHeading, {marginTop:30,marginLeft:5,marginBottom:10}]}>
+                        Wifi Portal
+                    </Text>
+                    <View style={[mstyles.cardView,{flexDirection:'column',marginBottom:20}]}>
+                        <Text style={[mstyles.textStyle, {marginLeft:2,marginRight:10,marginBottom:10}]}>
+                            Wifi ID
+                        </Text>
+                        <TextInput  style={mstyles.textInputStyle} 
+                            underlineColorAndroid='rgba(0,0,0,0)'
+                            defaultValue={this.state.wifiID}
+                            placeholder="Enter Wifi ID" 
+                            placeholderTextColor={colors.GRAY_DARK}
+                            onChangeText = {this.typeWifiID}       
+                        />
+                        <Text style={[mstyles.textStyle, {marginLeft:2,marginRight:10,marginBottom:10,marginTop:15}]}>
+                            Password
+                        </Text>
+                        <TextInput  style={mstyles.textInputStyle} 
+                            underlineColorAndroid='rgba(0,0,0,0)'
+                            defaultValue={this.state.wifiPassword}
+                            placeholder="Enter Wifi Password" 
+                            placeholderTextColor={colors.GRAY_DARK}
+                            onChangeText = {this.typeWifiPAssword}       
+                        />
+                        
+                        <TouchableOpacity style={[mstyles.buttonBlue, {marginBottom:5,marginTop:20}]}
+                        onPress={this.updateWifiPortalInDB}>
+                            <Text style={[mstyles.textStyle,{fontSize: typography.FONT_SIZE_16}]}>
+                                Update
+                            </Text>
+                        </TouchableOpacity>
+                       
+                    </View>
+                   
 
                     <View style={[mstyles.cardView,{flexDirection:'column',marginTop:20,marginBottom:20,
                                 display: 'none'}]}>
@@ -194,6 +261,14 @@ export default class Settings extends Component {
         this.setState({newName: text})
     }
 
+    typeWifiID = (text) => {
+        this.setState({wifiID: text})
+    }
+
+    typeWifiPAssword = (text) => {
+        this.setState({wifiPassword: text})
+    }
+
     typeBlynkToken = (text) => {
         this.setState({blynkToken: text})
     }
@@ -248,6 +323,51 @@ export default class Settings extends Component {
             }
         }
     }
+
+
+    removeContainerInDb = () => {
+
+        if(this.state.selectedRemoveContainerID!=""){
+            this.setState({isloading: !this.state.isloading});
+            firestore().collection(Constant.DbInventory).doc(this.state.selectedRemoveContainerID)
+            .delete()
+            .then(() => {
+                let arrTemp = this.state.InventoryData.slice()
+                let arrDDownTemp = this.state.DropDownArray.slice()
+                this.state.InventoryData.map((item, i) => {
+                    if(item.id==this.state.selectedRemoveContainerID){
+                        arrTemp.splice(i, 1);
+                        arrDDownTemp.splice(i, 1);
+                    }
+                });
+                
+                
+                this.setState({InventoryData: arrTemp,
+                    DropDownArray: arrDDownTemp,
+                    selectedRemoveContainer:'',
+                    selectedRemoveContainerID:''
+                });
+
+               
+                Helping.showToastMessage("Container removed successfully")
+            })
+            .catch((error) => {
+                Helping.showToastMessage("Unable to Connect to Server"+error)
+            })
+            .done(()=>{
+                this.setState({isloading: !this.state.isloading});
+            });
+        }
+        else{
+            if(this.state.selectedContainerID==""){
+                Helping.showToastMessage("Please select any container")
+            }
+            else{
+                Helping.showToastMessage("Please enter new name")
+            }
+        }
+    }
+
 
     addContainer = () => {
         if(this.state.InventoryData.length<50){
@@ -318,6 +438,37 @@ export default class Settings extends Component {
 
     gotoWifiPortal = () => {
         Linking.openURL('https://google.com');
+    }
+
+    updateWifiPortalInDB = () => {
+        if(this.state.wifiID!=""&&this.state.wifiPassword!=""){
+            this.setState({isloading: !this.state.isloading});
+            firestore().collection(Constant.DbWifi).doc(Constant.DbWifiDoc)
+            .update({wifi_name: this.state.wifiID,
+                    password: this.state.wifiPassword})
+            .then(() => {
+                this.setState({
+                    wifiID:'',
+                    wifiPassword:''
+                });
+               
+                Helping.showToastMessage("Updated wifi portal successfully")
+            })
+            .catch((error) => {
+                Helping.showToastMessage("Unable to Connect to Server"+error)
+            })
+            .done(()=>{
+                this.setState({isloading: !this.state.isloading});
+            });
+        }
+        else{
+            if(this.state.wifiID==""){
+                Helping.showToastMessage("Please enter wifi ID")
+            }
+            else{
+                Helping.showToastMessage("Please enter wifi password")
+            }
+        }
     }
 }
 
