@@ -31,6 +31,7 @@ export default class Settings extends Component {
            DropDownArray:[],
         }
         this.controller;
+        this.controllerRemove;
         this.getInventoryList()
      }
 
@@ -112,15 +113,19 @@ export default class Settings extends Component {
                         Remove Container
                     </Text>
                     <View style={[mstyles.cardView,{flexDirection:'column'}]}>
+                        <Text style={[mstyles.textStyle, {marginLeft:2,marginRight:10,marginBottom:10}]}>
+                            Container Name
+                        </Text>
                         <DropDownPicker style={mstyles.textInputStyle}
                             items={this.state.DropDownArray}
-                            controller={instance => this.controller = instance}
+                            controller={instance => this.controllerRemove = instance}
                             defaultValue={this.state.selectedRemoveContainer}
                             containerStyle={{height: 50}}
                             itemStyle={{justifyContent: 'flex-start'}}
                             labelStyle={mstyles.textDropDownStyle}
                             arrowColor={colors.WHITE}
                             activeLabelStyle={{color: colors.BROWN}}
+                            dropDownMaxHeight={140}
                             placeholder={'Select Container'}
                             placeholderStyle={{color:colors.GRAY_DARK}}
                             dropDownStyle={{backgroundColor: colors.PRIMARYLIGHT,
@@ -136,7 +141,7 @@ export default class Settings extends Component {
                             }}
                         />
                         
-                        <TouchableOpacity style={[mstyles.buttonBlue, {marginBottom:5,marginTop:20}]}
+                        <TouchableOpacity style={[mstyles.buttonBlue, {marginBottom:5,marginTop:65}]}
                         onPress={this.removeContainerInDb}>
                             <Text style={[mstyles.textStyle,{fontSize: typography.FONT_SIZE_16}]}>
                                 Remove
@@ -209,7 +214,7 @@ export default class Settings extends Component {
 
 
     getInventoryList(){
-        this.setState({isloading: !this.state.isloading});
+        this.setState({isloading: true});
         /* firestore().collection(Constant.DbInventory)
         .orderBy('createdAt', 'asc')
         .get()
@@ -242,7 +247,7 @@ export default class Settings extends Component {
                 Helping.showToastMessage("Unable to Connect to Server "+e)
             },
             next: (querySnapshot) => {
-                this.setState({isloading: false})
+         
                 const arrTemp = []
                 const arrDDownTemp = []
                 querySnapshot.forEach(documentSnapshot => {
@@ -250,7 +255,8 @@ export default class Settings extends Component {
                     arrTemp.push(documentSnapshot.data())
                     arrDDownTemp.push({label:documentSnapshot.data().name,value:documentSnapshot.data().id})
                 });
-                this.setState({InventoryData: arrTemp,DropDownArray: arrDDownTemp});
+                //Helping.showToastMessage("Unasdsdsfasd")
+                this.setState({InventoryData: arrTemp,DropDownArray: arrDDownTemp,isloading: false});
                 //console.log('Last Item: ', this.state.InventoryData[0]);
             },
         });
@@ -277,7 +283,7 @@ export default class Settings extends Component {
         
             
         if(this.state.selectedContainerID!=""&&this.state.newName!=""){
-            this.setState({isloading: !this.state.isloading});
+            this.setState({isloading: true});
             firestore().collection(Constant.DbInventory).doc(this.state.selectedContainerID)
             .update({name: this.state.newName})
             .then(() => {
@@ -311,7 +317,7 @@ export default class Settings extends Component {
                 Helping.showToastMessage("Unable to Connect to Server"+error)
             })
             .done(()=>{
-                this.setState({isloading: !this.state.isloading});
+                this.setState({isloading: false});
             });
         }
         else{
@@ -328,7 +334,7 @@ export default class Settings extends Component {
     removeContainerInDb = () => {
 
         if(this.state.selectedRemoveContainerID!=""){
-            this.setState({isloading: !this.state.isloading});
+            this.setState({isloading: true});
             firestore().collection(Constant.DbInventory).doc(this.state.selectedRemoveContainerID)
             .delete()
             .then(() => {
@@ -355,7 +361,7 @@ export default class Settings extends Component {
                 Helping.showToastMessage("Unable to Connect to Server"+error)
             })
             .done(()=>{
-                this.setState({isloading: !this.state.isloading});
+                this.setState({isloading: false});
             });
         }
         else{
@@ -371,7 +377,7 @@ export default class Settings extends Component {
 
     addContainer = () => {
         if(this.state.InventoryData.length<50){
-            this.setState({isloading: !this.state.isloading});
+            this.setState({isloading: true});
            
             var utcString = Helping.getCurrentDateTimeInUtcFormat()
 
@@ -389,11 +395,11 @@ export default class Settings extends Component {
             firestore().collection(Constant.DbInventory).doc(ref.id)
             .set(containerObj)
             .then(() => {
-                let arrTemp = this.state.InventoryData.slice()
+                /* let arrTemp = this.state.InventoryData.slice()
                 let arrDDownTemp = this.state.DropDownArray.slice()
                 arrTemp.push(containerObj)
                 arrDDownTemp.push({ label:containerObj.name, value:containerObj.id})
-                this.setState({InventoryData: arrTemp,DropDownArray: arrDDownTemp});
+                this.setState({InventoryData: arrTemp,DropDownArray: arrDDownTemp}); */
                 
                
                 Helping.showToastMessage("Container added successfully")
@@ -402,7 +408,7 @@ export default class Settings extends Component {
                 Helping.showToastMessage("Unable to Connect to Server"+error)
             })
             .done(()=>{
-                this.setState({isloading: !this.state.isloading});
+                this.setState({isloading: false});
             });
         }
         else{
@@ -412,7 +418,7 @@ export default class Settings extends Component {
 
     removeContainer = () => {
         if(this.state.InventoryData.length>1){
-            this.setState({isloading: !this.state.isloading});
+            this.setState({isloading: true});
 
             var lastDocId=this.state.InventoryData[this.state.InventoryData.length-1].id
             firestore().collection(Constant.DbInventory).doc(lastDocId)
@@ -431,7 +437,7 @@ export default class Settings extends Component {
                 Helping.showToastMessage("Unable to Connect to Server"+error)
             })
             .done(()=>{
-                this.setState({isloading: !this.state.isloading});
+                this.setState({isloading: false});
             });
         }
     }
@@ -442,7 +448,7 @@ export default class Settings extends Component {
 
     updateWifiPortalInDB = () => {
         if(this.state.wifiID!=""&&this.state.wifiPassword!=""){
-            this.setState({isloading: !this.state.isloading});
+            this.setState({isloading: true});
             firestore().collection(Constant.DbWifi).doc(Constant.DbWifiDoc)
             .update({wifi_name: this.state.wifiID,
                     password: this.state.wifiPassword})
@@ -458,7 +464,7 @@ export default class Settings extends Component {
                 Helping.showToastMessage("Unable to Connect to Server"+error)
             })
             .done(()=>{
-                this.setState({isloading: !this.state.isloading});
+                this.setState({isloading: false});
             });
         }
         else{
