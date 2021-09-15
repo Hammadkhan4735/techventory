@@ -7,6 +7,7 @@ import Loader from '../components/Loader';
 import firestore from '@react-native-firebase/firestore';
 import * as Helping from '../utils/Helping';
 import RNFetchBlob from 'react-native-fetch-blob';
+import Mailer from 'react-native-mail';
 import SvgUri from 'react-native-svg-uri';
 import Images from '../assets/Images';
 
@@ -85,6 +86,11 @@ export default class PlaceOrder extends Component {
                 }
             });
             console.log("CVS string",rowString);
+            
+          if(rowString==''){
+            Helping.showToastMessage("Please select any container")
+          }
+          else{
           const csvString = `${headerString}${rowString}`;
           
           // write the current list of answers to a local csv file
@@ -97,10 +103,16 @@ export default class PlaceOrder extends Component {
               console.log(`wrote file ${pathToWrite}`);
               Alert.alert(
                 "Exported Successfully",
-                "Place Order list data exported successfully \n\nFile location : "+pathToWrite,
+                "Place Order list data exported successfully \n\nFile location : "+pathToWrite +"\n\nDo you want to email this file ?",
                 [
-                  { text: "OK", onPress: () => {
-                      console.log("OK Pressed")
+                    {
+                        text: "No",
+                        onPress: () => console.log("Cancel Pressed"),
+                        style: "cancel"
+                    },
+                    { 
+                        text: "Yes", onPress: () => {
+                        this.sendAttachmentInEmail(pathToWrite)
                       /* if (Platform.OS === 'android') {
                     
                         RNFetchBlob.android.actionViewIntent(pathToWrite, 'text/html');
@@ -115,6 +127,39 @@ export default class PlaceOrder extends Component {
               // wrote file /storage/emulated/0/Download/data.csv
             })
             .catch(error => Helping.showToastMessage("Error in exporting data. please try again"));
+        }
+    }
+
+    sendAttachmentInEmail(filepath){
+        Mailer.mail({
+            subject: 'Place Order Techventory',
+            recipients: [''],
+            body: '<b>Please find attachment for placing order for techventory</b>',
+            //customChooserTitle: 'This is my new title', // Android only (defaults to "Send Mail")
+            isHTML: true,
+            attachments: [{
+              // Specify either `path` or `uri` to indicate where to find the file data.
+              // The API used to create or locate the file will usually indicate which it returns.
+              // An absolute path will look like: /cacheDir/photos/some image.jpg
+              // A URI starts with a protocol and looks like: content://appname/cacheDir/photos/some%20image.jpg
+              path: filepath, // The absolute path of the file from which to read data.
+              uri: '', // The uri of the file from which to read the data.
+              // Specify either `type` or `mimeType` to indicate the type of data.
+              type: 'csv', // Mime Type: jpg, png, doc, ppt, html, pdf, csv
+              mimeType: '', // - use only if you want to use custom type
+              name: 'PlaceOrder', // Optional: Custom filename for attachment
+            }]
+          }, (error, event) => {
+            Alert.alert(
+              error,
+              event,
+              [
+                {text: 'Ok', onPress: () => console.log('OK: Email Error Response')},
+                {text: 'Cancel', onPress: () => console.log('CANCEL: Email Error Response')}
+              ],
+              { cancelable: true }
+            )
+          });
     }
 
     getInventoryListForOrder(){
