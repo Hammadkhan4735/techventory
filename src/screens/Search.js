@@ -147,7 +147,7 @@ const renderItem = ({ item }) => (
                         <View style={{flexDirection:'row',marginBottom:20}}>
                             <View style={{flex:0.6}}>
                                 <Text style={[mstyles.textStyle,{fontSize: typography.FONT_SIZE_16}]}>
-                                    Time To Refil
+                                    Time Of Refil
                                 </Text>
                                 <Text style={[mstyles.textDropDownStyle,{fontSize: typography.FONT_SIZE_14,color:colors.HINT}]}>
                                     {Helping.convertUtcDateIntoLocalTime(item.timeToRefill)}
@@ -155,7 +155,7 @@ const renderItem = ({ item }) => (
                             </View>
                             <View style={{flex:0.4}}>
                                 <Text style={[mstyles.textStyle,{fontSize: typography.FONT_SIZE_16}]}>
-                                    Date To Refil
+                                    Date Of Refil
                                 </Text>
                                 <Text style={[mstyles.textDropDownStyle,{fontSize: typography.FONT_SIZE_14,color:colors.HINT}]}>
                                     {Helping.convertUtcDateIntoLocalDate(item.dateToRefill+'T'+item.timeToRefill)}

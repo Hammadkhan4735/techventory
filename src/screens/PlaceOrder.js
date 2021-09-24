@@ -30,8 +30,6 @@ export default class PlaceOrder extends Component {
           </TouchableOpacity>) 
         })
 
-        
-
         this.getInventoryListForOrder()
      }
 
@@ -77,12 +75,12 @@ export default class PlaceOrder extends Component {
        
           const data = this.state.InventoryData.slice()
           // construct csvString
-          const headerString = 'NAME,TIME_TO_REFILL,DATE_TO_REFILL,WEIGHT\n';
-          //const rowString = data.map(item=> `${item.name},${item.timeToRefill},${item.dateToRefill},${item.weight}\n`).join('');
+          const headerString = 'NAME\n';
+          //const headerString = 'NAME,TIME_TO_REFILL,DATE_TO_REFILL,WEIGHT\n';
             var rowString=''
             data.map((item, i) => {
                 if(item.isSelected){
-                    rowString=rowString+`${item.name},${item.timeToRefill},${item.dateToRefill},${item.weight}\n`
+                    rowString=rowString+`${item.name}\n`
                 }
             });
             console.log("CVS string",rowString);
@@ -97,36 +95,32 @@ export default class PlaceOrder extends Component {
           const pathToWrite = `${RNFetchBlob.fs.dirs.DownloadDir}/place_order.csv`;
           console.log('pathToWrite', pathToWrite);
           // pathToWrite /storage/emulated/0/Download/data.csv
-          RNFetchBlob.fs
-            .writeFile(pathToWrite, csvString, 'utf8')
-            .then(() => {
-              console.log(`wrote file ${pathToWrite}`);
-              Alert.alert(
-                "Exported Successfully",
-                "Place Order list data exported successfully \n\nFile location : "+pathToWrite +"\n\nDo you want to email this file ?",
-                [
-                    {
-                        text: "No",
-                        onPress: () => console.log("Cancel Pressed"),
-                        style: "cancel"
-                    },
-                    { 
-                        text: "Yes", onPress: () => {
-                        this.sendAttachmentInEmail(pathToWrite)
-                      /* if (Platform.OS === 'android') {
-                    
-                        RNFetchBlob.android.actionViewIntent(pathToWrite, 'text/html');
-                      } else {
-                        RNFetchBlob.ios.openDocument(pathToWrite);
-                      } */
-                    } 
-                    }
-                ]
-              );
-              //Helping.showToastMessage("Data exported successfully \n\nFile location : "+pathToWrite)
-              // wrote file /storage/emulated/0/Download/data.csv
-            })
-            .catch(error => Helping.showToastMessage("Error in exporting data. please try again"));
+
+          RNFetchBlob.fs.unlink(pathToWrite)
+            .then(() => { 
+                RNFetchBlob.fs.writeFile(pathToWrite, csvString, 'utf8')
+                .then(() => {
+                  console.log(`wrote file ${pathToWrite}`);
+                  Alert.alert(
+                    "Exported Successfully",
+                    "Place Order list data exported successfully \n\nFile location : "+pathToWrite +"\n\nDo you want to email this file ?",
+                    [
+                        {
+                            text: "No",
+                            onPress: () => console.log("Cancel Pressed"),
+                            style: "cancel"
+                        },
+                        { 
+                            text: "Yes", onPress: () => {
+                            this.sendAttachmentInEmail(pathToWrite)
+                        } 
+                        }
+                    ]
+                  );
+                }).catch(error => Helping.showToastMessage("Error in exporting data. please try again"));
+             })
+            .catch((err) => { Helping.showToastMessage("Error while updating exported file") })
+         
         }
     }
 
@@ -231,7 +225,7 @@ export default class PlaceOrder extends Component {
                         <View style={{flexDirection:'row',marginBottom:15}}>
                             <View style={{flex:0.4}}>
                                 <Text style={[mstyles.textStyle,{fontSize: typography.FONT_SIZE_16}]}>
-                                    Time To Refil
+                                    Time Of Refil
                                 </Text>
                                 <Text style={[mstyles.textStyleSmall,{marginLeft:5}]}>
                                     {Helping.convertUtcDateIntoLocalTime(item.timeToRefill)}
@@ -240,7 +234,7 @@ export default class PlaceOrder extends Component {
                             <View style={{flex:0.2}}></View>
                             <View style={{flex:0.4}}>
                                 <Text style={[mstyles.textStyle,{fontSize: typography.FONT_SIZE_16}]}>
-                                    Date To Refil
+                                    Date Of Refil
                                 </Text>
                                 <Text style={[mstyles.textStyleSmall,{marginLeft:5}]}>
                                     {Helping.convertUtcDateIntoLocalDate(item.dateToRefill+'T'+item.timeToRefill)}

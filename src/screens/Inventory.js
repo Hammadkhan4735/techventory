@@ -101,7 +101,8 @@ export default class Inventory extends Component {
               );
               if (granted['android.permission.WRITE_EXTERNAL_STORAGE'] && 
                   granted['android.permission.READ_EXTERNAL_STORAGE'] === PermissionsAndroid.RESULTS.GRANTED) {
-                  this.getInventoryListAndExportInExcel() 
+                  //this.getInventoryListAndExportInExcel() 
+                  this.exportDataToCsvn()
               } else {
                   Helping.showToastMessage("permission denied")
               }
@@ -139,7 +140,7 @@ export default class Inventory extends Component {
     exportDataToCsvn = () => {
           const data = this.state.InventoryData.slice()
           // construct csvString
-          const headerString = 'NAME,TIME_TO_REFILL,DATE_TO_REFILL,WEIGHT\n';
+          const headerString = 'NAME,TIME_OF_REFILL,DATE_OF_REFILL,WEIGHT\n';
           const rowString = data.map(item => `${item.name},${item.timeToRefill},${item.dateToRefill},${item.weight}\n`).join('');
           const csvString = `${headerString}${rowString}`;
           
@@ -147,6 +148,8 @@ export default class Inventory extends Component {
           const pathToWrite = `${RNFetchBlob.fs.dirs.DownloadDir}/inventory.csv`;
           console.log('pathToWrite', pathToWrite);
           // pathToWrite /storage/emulated/0/Download/data.csv
+        RNFetchBlob.fs.unlink(pathToWrite)
+            .then(() => { 
           RNFetchBlob.fs
             .writeFile(pathToWrite, csvString, 'utf8')
             .then(() => {
@@ -165,6 +168,8 @@ export default class Inventory extends Component {
               );
             })
             .catch(error => Helping.showToastMessage("Error in exporting data. please try again"));
+        })
+        .catch((err) => { Helping.showToastMessage("Error while updating exported file") })
     }
     
 }
@@ -179,7 +184,7 @@ const renderItem = ({ item }) => (
                     <View style={{flexDirection:'row',marginBottom:15}}>
                         <View style={{flex:0.4}}>
                             <Text style={[mstyles.textStyle,{fontSize: typography.FONT_SIZE_16}]}>
-                                Time To Refil
+                                Time Of Refil
                             </Text>
                             <Text style={[mstyles.textStyleSmall,{marginLeft:5}]}>                                
                                 {Helping.convertUtcDateIntoLocalTime(item.timeToRefill)}
@@ -188,7 +193,7 @@ const renderItem = ({ item }) => (
                         <View style={{flex:0.2}}></View>
                         <View style={{flex:0.4}}>
                             <Text style={[mstyles.textStyle,{fontSize: typography.FONT_SIZE_16}]}>
-                                Date To Refil
+                                Date Of Refil
                             </Text>
                             <Text style={[mstyles.textStyleSmall,{marginLeft:5}]}>
                                 { Helping.convertUtcDateIntoLocalDate(item.dateToRefill+'T'+item.timeToRefill)}
